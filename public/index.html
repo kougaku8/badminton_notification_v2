@@ -988,49 +988,60 @@ return url.toString();
 GAS API
 *************************************************/
 async function callGasApi(
-action,
-params
+  action,
+  params
 ) {
 
-const url =
-buildApiUrl(
-action,
-params
-);
+  const url =
+    buildApiUrl(
+      action,
+      params
+    );
 
-console.log(
-'GAS API:',
-action
-);
+  console.log(
+    'GAS API:',
+    action
+  );
 
-const response =
-await fetch(
-url,
-{
-method: 'GET'
+  console.log(
+    'GAS URL:',
+    url
+  );
+
+
+  const response =
+    await fetch(
+      url,
+      {
+        method: 'GET'
+      }
+    );
+
+
+  if (!response.ok) {
+
+    throw new Error(
+      'HTTP ' +
+      response.status
+    );
+
+  }
+
+
+  const result =
+    await response.json();
+
+
+  console.log(
+    'GAS response:',
+    result
+  );
+
+
+  return result;
+
 }
-);
 
-if (!response.ok) {
-
-throw new Error(
-  'HTTP ' +
-  response.status
-);
-
-}
-
-const result =
-await response.json();
-
-console.log(
-'GAS response:',
-result
-);
-
-return result;
-
-}
 
 /*************************************************
 
@@ -1197,19 +1208,24 @@ Register Device
 */
 const data = {
 
-deviceId:
-  deviceId,
+  deviceId:
+    deviceId,
 
-userName:
-  currentUserName,
+  userName:
+    currentUserName,
 
-fcmToken:
-  fcmToken,
+  fcmToken:
+    '',
 
-platform:
-  getPlatform()
+  platform:
+    getPlatform(),
+
+  language:
+    currentLanguage
 
 };
+console.log('REGISTER LANGUAGE =', currentLanguage);
+console.log('REGISTER DATA =', data);
 
 try {
 
