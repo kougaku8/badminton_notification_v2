@@ -2,339 +2,297 @@
  * badminton_notification_v2
  * Code.gs
  *
- * Web App 入口
- * 暂时只负责：
- * 1. 打开 Notification.html
- * 2. 提供前端调用 Device.gs 的接口
+ * GAS Web App API
  *
- * 暂时不接 FCM
+ * 支持：
+ * 1. Web App 页面
+ * 2. Firebase Hosting → GAS GET API
+ * 3. Firebase Hosting → GAS POST API
+ * 4. checkUserName
+ * 5. registerDevice
+ * 6. getDeviceStatus
+ * 7. enableDevice
+ * 8. disableDevice
  *************************************************/
 
-/**
-Web App 入口
-*/
+/*************************************************
+ * Web App Entry
+ *************************************************/
+
 function doGet(e) {
   const action =
     e && e.parameter ? String(e.parameter.action || "").trim() : "";
 
-  /*
-
-=========================
-Check User Name
-=========================
-*/
+  /***********************************************
+   * Check User Name
+   ***********************************************/
 
   if (action === "checkUserName") {
     const userName = e.parameter.userName || "";
 
-    return createJsonResponse_(checkUserName(userName));
+    return createJsonResponse_(apiCheckUserName(userName));
   }
 
-  /*
-
-=========================
-Register Device
-=========================
-*/
+  /***********************************************
+   * Register Device
+   ***********************************************/
 
   if (action === "registerDevice") {
-    try {
-      const data = {
-        deviceId: e.parameter.deviceId || "",
+    const data = {
+      deviceId: e.parameter.deviceId || "",
 
-        userName: e.parameter.userName || "",
+      userName: e.parameter.userName || "",
 
-        fcmToken: e.parameter.fcmToken || "",
+      fcmToken: e.parameter.fcmToken || "",
 
-        platform: e.parameter.platform || "",
-      };
+      platform: e.parameter.platform || "",
 
-      return createJsonResponse_(registerDevice(data));
-    } catch (error) {
-      return createJsonResponse_({
-        success: false,
+      language: e.parameter.language || "ja",
+    };
 
-        message: error && error.message ? error.message : String(error),
-      });
-    }
+    Logger.log("doGet registerDevice data = " + JSON.stringify(data));
+
+    return createJsonResponse_(apiRegisterDevice(data));
   }
 
-  /*
-
-=========================
-Get Device Status
-=========================
-*/
+  /***********************************************
+   * Get Device Status
+   ***********************************************/
 
   if (action === "getDeviceStatus") {
-    try {
-      const deviceId = e.parameter.deviceId || "";
+    const deviceId = e.parameter.deviceId || "";
 
-      return createJsonResponse_(getDeviceStatus(deviceId));
-    } catch (error) {
-      return createJsonResponse_({
-        success: false,
-
-        message: error && error.message ? error.message : String(error),
-      });
-    }
+    return createJsonResponse_(apiGetDeviceStatus(deviceId));
   }
 
-  /*
-
-=========================
-Enable Device
-=========================
-*/
+  /***********************************************
+   * Enable Device
+   ***********************************************/
 
   if (action === "enableDevice") {
-    try {
-      const deviceId = e.parameter.deviceId || "";
+    const deviceId = e.parameter.deviceId || "";
 
-      return createJsonResponse_(enableDevice(deviceId));
-    } catch (error) {
-      return createJsonResponse_({
-        success: false,
-
-        message: error && error.message ? error.message : String(error),
-      });
-    }
+    return createJsonResponse_(apiEnableDevice(deviceId));
   }
 
-  /*
-
-=========================
-Disable Device
-=========================
-*/
+  /***********************************************
+   * Disable Device
+   ***********************************************/
 
   if (action === "disableDevice") {
-    try {
-      const deviceId = e.parameter.deviceId || "";
+    const deviceId = e.parameter.deviceId || "";
 
-      return createJsonResponse_(disableDevice(deviceId));
-    } catch (error) {
-      return createJsonResponse_({
-        success: false,
-
-        message: error && error.message ? error.message : String(error),
-      });
-    }
+    return createJsonResponse_(apiDisableDevice(deviceId));
   }
 
-  /*
-
-=========================
-Normal Web App Page
-=========================
-*/
+  /***********************************************
+   * Normal Web App Page
+   ***********************************************/
 
   return HtmlService.createTemplateFromFile("Notification")
+
     .evaluate()
+
     .setTitle("Badminton Notification V2")
+
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-/**
-
-JSON Response
-*/
-function createJsonResponse_(data) {
-  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
-    ContentService.MimeType.JSON,
-  );
-}
-
-/**
-
-API:
-Check User Name
-*/
-function apiCheckUserName(userName) {
-  try {
-    return checkUserName(userName);
-  } catch (error) {
-    return {
-      success: false,
-
-      message: error.message,
-    };
-  }
-}
-
-/**
-
-API:
-Register Device
-*/
-function apiRegisterDevice(data) {
-  try {
-    return registerDevice(data);
-  } catch (error) {
-    return {
-      success: false,
-
-      message: error.message,
-    };
-  }
-}
-
-/**
-
-API:
-Get Device Status
-*/
-function apiGetDeviceStatus(deviceId) {
-  try {
-    return getDeviceStatus(deviceId);
-  } catch (error) {
-    return {
-      success: false,
-
-      message: error.message,
-    };
-  }
-}
-
-/**
-
-API:
-Enable Device
-*/
-function apiEnableDevice(deviceId) {
-  try {
-    return enableDevice(deviceId);
-  } catch (error) {
-    return {
-      success: false,
-
-      message: error.message,
-    };
-  }
-}
-
-/**
-
-API:
-Disable Device
-*/
-function apiDisableDevice(deviceId) {
-  try {
-    return disableDevice(deviceId);
-  } catch (error) {
-    return {
-      success: false,
-
-      message: error.message,
-    };
-  }
-}
-
-/**
-
-Test Devices Sheet
-*/
-function testDevicesSheet() {
-  const sheet = getDevicesSheet_();
-
-  Logger.log("Sheet name: " + sheet.getName());
-
-  Logger.log("Last row: " + sheet.getLastRow());
-
-  Logger.log("Last column: " + sheet.getLastColumn());
-}
-
-/**
- * JSON Response
- */
-function createJsonResponse_(data) {
-  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
-    ContentService.MimeType.JSON,
-  );
-}
-
-/**
- * 检查姓名
+/*************************************************
+ * POST API
  *
- * Notification.html
+ * Firebase Hosting
  *       ↓
- * google.script.run
+ * fetch()
  *       ↓
- * Code.gs
- *       ↓
- * Device.gs
- */
+ * doPost()
+ *************************************************/
+
+function doPost(e) {
+  try {
+    if (!e || !e.postData || !e.postData.contents) {
+      return createJsonResponse_({
+        success: false,
+
+        message: "POST data がありません。",
+      });
+    }
+
+    const request = JSON.parse(e.postData.contents);
+
+    const action = String(request.action || "").trim();
+
+    const data = request.data || {};
+
+    Logger.log("doPost action = " + action);
+
+    Logger.log("doPost data = " + JSON.stringify(data));
+
+    /***********************************************
+     * Check User Name
+     ***********************************************/
+
+    if (action === "checkUserName") {
+      return createJsonResponse_(apiCheckUserName(data.userName || ""));
+    }
+
+    /***********************************************
+     * Register Device
+     ***********************************************/
+
+    if (action === "registerDevice") {
+      return createJsonResponse_(apiRegisterDevice(data));
+    }
+
+    /***********************************************
+     * Get Device Status
+     ***********************************************/
+
+    if (action === "getDeviceStatus") {
+      return createJsonResponse_(apiGetDeviceStatus(data.deviceId || ""));
+    }
+
+    /***********************************************
+     * Enable Device
+     ***********************************************/
+
+    if (action === "enableDevice") {
+      return createJsonResponse_(apiEnableDevice(data.deviceId || ""));
+    }
+
+    /***********************************************
+     * Disable Device
+     ***********************************************/
+
+    if (action === "disableDevice") {
+      return createJsonResponse_(apiDisableDevice(data.deviceId || ""));
+    }
+
+    /***********************************************
+     * Unknown Action
+     ***********************************************/
+
+    return createJsonResponse_({
+      success: false,
+
+      message: "Unknown action: " + action,
+    });
+  } catch (error) {
+    Logger.log(
+      "doPost error = " +
+        (error && error.message ? error.message : String(error)),
+    );
+
+    return createJsonResponse_({
+      success: false,
+
+      message: error && error.message ? error.message : String(error),
+    });
+  }
+}
+
+/*************************************************
+ * API: Check User Name
+ *************************************************/
+
 function apiCheckUserName(userName) {
   try {
     return checkUserName(userName);
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+
+      message: error && error.message ? error.message : String(error),
     };
   }
 }
 
-/**
- * 注册设备
- */
+/*************************************************
+ * API: Register Device
+ *************************************************/
+
 function apiRegisterDevice(data) {
   try {
+    Logger.log("apiRegisterDevice data = " + JSON.stringify(data));
+
     return registerDevice(data);
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+
+      message: error && error.message ? error.message : String(error),
     };
   }
 }
 
-/**
- * 查询设备状态
- */
+/*************************************************
+ * API: Get Device Status
+ *************************************************/
+
 function apiGetDeviceStatus(deviceId) {
   try {
     return getDeviceStatus(deviceId);
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+
+      message: error && error.message ? error.message : String(error),
     };
   }
 }
 
-/**
- * 开启设备通知
- */
+/*************************************************
+ * API: Enable Device
+ *************************************************/
+
 function apiEnableDevice(deviceId) {
   try {
     return enableDevice(deviceId);
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+
+      message: error && error.message ? error.message : String(error),
     };
   }
 }
 
-/**
- * 关闭设备通知
- */
+/*************************************************
+ * API: Disable Device
+ *************************************************/
+
 function apiDisableDevice(deviceId) {
   try {
     return disableDevice(deviceId);
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+
+      message: error && error.message ? error.message : String(error),
     };
   }
 }
+
+/*************************************************
+ * JSON Response
+ *************************************************/
+
+function createJsonResponse_(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/*************************************************
+ * Test Devices Sheet
+ *************************************************/
 
 function testDevicesSheet() {
   const sheet = getDevicesSheet_();
 
   Logger.log("Sheet name: " + sheet.getName());
+
   Logger.log("Last row: " + sheet.getLastRow());
+
   Logger.log("Last column: " + sheet.getLastColumn());
 }

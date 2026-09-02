@@ -3,6 +3,7 @@
  * Device.gs
  *
  * 设备注册、姓名检查、设备启用/停用
+ * 支持用户语言：zh / ja
  *************************************************/
 
 const SPREADSHEET_ID = "1ZefGVmo1UpUXyxLOD8gPhi8sj0Rju4pJ6uCVm5bVvnM";
@@ -14,6 +15,7 @@ const DEVICES_SHEET_NAME = "Devices";
  */
 function getDevicesSheet_() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
   const sheet = ss.getSheetByName(DEVICES_SHEET_NAME);
 
   if (!sheet) {
@@ -38,22 +40,29 @@ function checkUserName(userName) {
   if (!userName) {
     return {
       success: false,
+
       message: "姓名不能为空。",
     };
   }
 
   const sheet = getDevicesSheet_();
+
   const lastRow = sheet.getLastRow();
 
   if (lastRow < 2) {
     return {
       success: true,
+
       exists: false,
+
       count: 0,
     };
   }
 
-  const values = sheet.getRange(2, 1, lastRow - 1, 9).getValues();
+  /*
+   * 现在 Devices 有 10 列
+   */
+  const values = sheet.getRange(2, 1, lastRow - 1, 10).getValues();
 
   let count = 0;
 
@@ -67,7 +76,9 @@ function checkUserName(userName) {
 
   return {
     success: true,
+
     exists: count > 0,
+
     count: count,
   };
 }
@@ -83,18 +94,23 @@ function findDeviceById_(deviceId) {
   }
 
   const sheet = getDevicesSheet_();
+
   const lastRow = sheet.getLastRow();
 
   if (lastRow < 2) {
     return null;
   }
 
-  const values = sheet.getRange(2, 1, lastRow - 1, 9).getValues();
+  /*
+   * Devices = 10 columns
+   */
+  const values = sheet.getRange(2, 1, lastRow - 1, 10).getValues();
 
   for (let i = 0; i < values.length; i++) {
     if (String(values[i][0]) === deviceId) {
       return {
         rowNumber: i + 2,
+
         data: values[i],
       };
     }
@@ -111,16 +127,40 @@ function findDeviceById_(deviceId) {
  *   deviceId,
  *   userName,
  *   fcmToken,
- *   platform
+ *   platform,
+ *   language
  * }
+ *
+ * language：
+ *   zh = 中文
+ *   ja = 日本語
  */
 function registerDevice(data) {
   data = data || {};
 
+  Logger.log("registerDevice data = " + JSON.stringify(data));
+
   const deviceId = String(data.deviceId || "").trim();
+
   const userName = String(data.userName || "").trim();
+
   const fcmToken = String(data.fcmToken || "").trim();
+
   const platform = String(data.platform || "").trim();
+
+  /*
+   * language：
+   * zh = 中文
+   * ja = 日本語
+   *
+   * 旧版客户端没有发送时，
+   * 默认使用 ja。
+   */
+  let language = String(data.language || "").trim();
+
+  if (language !== "zh" && language !== "ja") {
+    language = "ja";
+  }
 
   if (!deviceId) {
     throw new Error("device_id がありません。");
@@ -131,38 +171,50 @@ function registerDevice(data) {
   }
 
   const sheet = getDevicesSheet_();
+
   const now = new Date();
 
   /*
-   * 重点：
-   * device_id 是设备唯一识别码。
-   *
-   * 如果同一台设备再次注册，
-   * 不新增一行，而是更新原来的记录。
+   * 查找已有设备
    */
   const existing = findDeviceById_(deviceId);
 
+  /*
+   * 已有设备
+   */
   if (existing) {
     const row = existing.rowNumber;
 
+    // B = user_name
     sheet.getRange(row, 2).setValue(userName);
 
+    // C = fcm_token
     if (fcmToken) {
       sheet.getRange(row, 3).setValue(fcmToken);
     }
 
+    // D = enabled
     sheet.getRange(row, 4).setValue(true);
 
+    // E = platform
     if (platform) {
       sheet.getRange(row, 5).setValue(platform);
     }
 
+    // G = updated_at
     sheet.getRange(row, 7).setValue(now);
+
+    // I = status
     sheet.getRange(row, 9).setValue("active");
+
+    // J = language
+    sheet.getRange(row, 10).setValue(language);
 
     return {
       success: true,
+
       action: "updated",
+
       message: "设备信息已更新。",
     };
   }
@@ -172,19 +224,31 @@ function registerDevice(data) {
    */
   sheet.appendRow([
     deviceId,
+
     userName,
+
     fcmToken,
+
     true,
+
     platform,
+
     now,
+
     now,
+
     "",
+
     "active",
+
+    language,
   ]);
 
   return {
     success: true,
+
     action: "created",
+
     message: "设备注册成功。",
   };
 }
@@ -192,11 +256,9 @@ function registerDevice(data) {
 /**
  * 关闭当前设备通知
  *
- * 注意：
  * 不删除 device_id
  * 不删除 FCM Token
  *
- * 只是：
  * enabled = false
  */
 function disableDevice(deviceId) {
@@ -205,6 +267,7 @@ function disableDevice(deviceId) {
   if (!existing) {
     return {
       success: false,
+
       message: "设备不存在。",
     };
   }
@@ -212,10 +275,12 @@ function disableDevice(deviceId) {
   const sheet = getDevicesSheet_();
 
   sheet.getRange(existing.rowNumber, 4).setValue(false);
+
   sheet.getRange(existing.rowNumber, 7).setValue(new Date());
 
   return {
     success: true,
+
     message: "通知已关闭。",
   };
 }
@@ -229,6 +294,7 @@ function enableDevice(deviceId) {
   if (!existing) {
     return {
       success: false,
+
       message: "设备不存在。",
     };
   }
@@ -236,11 +302,14 @@ function enableDevice(deviceId) {
   const sheet = getDevicesSheet_();
 
   sheet.getRange(existing.rowNumber, 4).setValue(true);
+
   sheet.getRange(existing.rowNumber, 7).setValue(new Date());
+
   sheet.getRange(existing.rowNumber, 9).setValue("active");
 
   return {
     success: true,
+
     message: "通知已开启。",
   };
 }
@@ -254,6 +323,7 @@ function getDeviceStatus(deviceId) {
   if (!existing) {
     return {
       success: true,
+
       exists: false,
     };
   }
@@ -262,11 +332,19 @@ function getDeviceStatus(deviceId) {
 
   return {
     success: true,
+
     exists: true,
+
     deviceId: row[0],
+
     userName: row[1],
+
     enabled: row[3] === true,
+
     platform: row[4],
+
     status: row[8],
+
+    language: row[9] || "ja",
   };
 }
