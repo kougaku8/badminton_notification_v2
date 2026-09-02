@@ -1,160 +1,1351 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
+<!DOCTYPE html> <html lang="zh-CN"> <head> <meta charset="UTF-8">
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title id="pageTitle">通知设置</title> <style>
+* {
+  box-sizing: border-box;
+}
 
-    <title>Badminton Notification V2 - API Test</title>
+body {
+  margin: 0;
+  padding: 24px 16px;
 
-    <style>
-      body {
-        margin: 0;
-        padding: 40px 20px;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP",
-          sans-serif;
-        background: #f5f7fa;
-        color: #222;
-      }
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans JP",
+    sans-serif;
 
-      .container {
-        max-width: 480px;
-        margin: 0 auto;
-      }
+  background: #f5f7fa;
+  color: #222;
+}
 
-      .card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-      }
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+}
 
-      h1 {
-        margin-top: 0;
-        font-size: 22px;
-        text-align: center;
-      }
+.card {
+  background: #ffffff;
 
-      .description {
-        color: #666;
-        line-height: 1.6;
-        font-size: 14px;
-        text-align: center;
-        margin-bottom: 24px;
-      }
+  border-radius: 16px;
 
-      button {
-        width: 100%;
-        padding: 14px;
-        border: 0;
-        border-radius: 10px;
-        background: #4285f4;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-      }
+  padding: 24px;
 
-      button:disabled {
-        background: #aaa;
-      }
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.08);
+}
 
-      #result {
-        margin-top: 20px;
-        padding: 14px;
-        border-radius: 10px;
-        background: #f1f3f4;
-        white-space: pre-wrap;
-        word-break: break-word;
-        font-family: monospace;
-        font-size: 13px;
-      }
+/* =========================
+   Language Switch
+========================== */
 
-      .success {
-        background: #e6f4ea !important;
-        color: #137333;
-      }
+.language-switch {
+  display: flex;
+  justify-content: flex-end;
 
-      .error {
-        background: #fce8e6 !important;
-        color: #c5221f;
-      }
-    </style>
-  </head>
+  margin-bottom: 18px;
+}
 
-  <body>
-    <div class="container">
-      <div class="card">
-        <h1>Firebase → GAS API Test</h1>
+.language-button {
+  width: auto;
 
-        <div class="description">
-          测试 Firebase Hosting 是否可以通过 HTTP API 连接到 Google Apps
-          Script。
-        </div>
+  margin: 0;
 
-        <button id="testButton" onclick="testGasApi()">测试 GAS API</button>
+  padding: 7px 12px;
 
-        <div id="result">尚未测试。</div>
-      </div>
-    </div>
+  border: 1px solid #ccc;
+  border-radius: 8px;
 
-    <script>
-      /*************************************************
-       * GAS Web App URL
-       *************************************************/
+  background: #ffffff;
+  color: #555;
 
-      const GAS_WEB_APP_URL =
-        "https://script.google.com/macros/s/AKfycbxz1vbqjVOIcDD_GenDog-N4eEiD1_rBKHHRl0xovwKT_xfZWwUm0-rjjuNvjYG0Jlj/exec";
+  font-size: 13px;
 
-      /*************************************************
-       * 测试 GAS API
-       *************************************************/
+  cursor: pointer;
+}
 
-      async function testGasApi() {
-        const button = document.getElementById("testButton");
+.language-button.active {
+  background: #4285f4;
 
-        const result = document.getElementById("result");
+  border-color: #4285f4;
 
-        button.disabled = true;
+  color: #ffffff;
+}
 
-        result.className = "";
+.language-separator {
+  margin: 0 6px;
 
-        result.textContent = "正在连接 GAS...";
+  color: #aaa;
 
-        try {
-          const url =
-            GAS_WEB_APP_URL + "?action=checkUserName" + "&userName=TestUser";
+  line-height: 30px;
+}
 
-          console.log("Request URL:", url);
+/* =========================
+   General
+========================== */
 
-          const response = await fetch(url, {
-            method: "GET",
-          });
+h1 {
+  margin-top: 0;
 
-          console.log("HTTP status:", response.status);
+  font-size: 24px;
 
-          if (!response.ok) {
-            throw new Error("HTTP Error: " + response.status);
-          }
+  text-align: center;
+}
 
-          const data = await response.json();
+.description {
+  color: #666;
 
-          console.log("API response:", data);
+  line-height: 1.6;
 
-          result.className = "success";
+  font-size: 14px;
 
-          result.textContent = JSON.stringify(data, null, 2);
-        } catch (error) {
-          console.error("API error:", error);
+  text-align: center;
 
-          result.className = "error";
+  margin-bottom: 24px;
+}
 
-          result.textContent = "API 调用失败：\n\n" + error.message;
-        } finally {
-          button.disabled = false;
-        }
-      }
-    </script>
-  </body>
-</html>
+label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+
+  padding: 13px 14px;
+
+  border: 1px solid #ccc;
+
+  border-radius: 10px;
+
+  font-size: 16px;
+
+  outline: none;
+}
+
+input:focus {
+  border-color: #4285f4;
+}
+
+button {
+  width: 100%;
+
+  margin-top: 16px;
+
+  padding: 13px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background: #4285f4;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #aaa;
+
+  cursor: not-allowed;
+}
+
+.secondary {
+  background: #777;
+}
+
+.hidden {
+  display: none;
+}
+
+.message {
+  margin-top: 18px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: #f1f3f4;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+.success {
+  background: #e6f4ea;
+
+  color: #137333;
+}
+
+.error {
+  background: #fce8e6;
+
+  color: #c5221f;
+}
+
+.device-id {
+  margin-top: 12px;
+
+  padding: 10px;
+
+  background: #f1f3f4;
+
+  border-radius: 8px;
+
+  word-break: break-all;
+
+  font-family: monospace;
+
+  font-size: 12px;
+
+  color: #555;
+}
+
+.confirm-name {
+  font-size: 22px;
+
+  font-weight: bold;
+
+  text-align: center;
+
+  margin: 20px 0;
+}
+
+.button-row {
+  display: flex;
+
+  gap: 10px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
+</style> </head> <body> <div class="container"> <div class="card">
+<!-- =========================
+     Language Switch
+========================== -->
+
+<div class="language-switch">
+
+  <button
+    id="languageZh"
+    class="language-button"
+    onclick="setLanguage('zh')">
+
+    中文
+
+  </button>
+
+  <span class="language-separator">
+    |
+  </span>
+
+  <button
+    id="languageJa"
+    class="language-button"
+    onclick="setLanguage('ja')">
+
+    日本語
+
+  </button>
+
+</div>
+
+<!-- =========================
+     Step 1
+========================== -->
+
+<div id="nameStep">
+
+  <h1 data-i18n="title">
+    通知设置
+  </h1>
+
+  <div
+    class="description"
+    data-i18n="description">
+
+    在这台手机上设置羽毛球通知。
+
+  </div>
+
+  <label
+    for="userName"
+    data-i18n="nameLabel">
+
+    姓名
+
+  </label>
+
+  <input
+    id="userName"
+    type="text"
+    data-i18n-placeholder="namePlaceholder"
+    placeholder="请输入您的姓名"
+    autocomplete="name"
+  >
+
+  <button
+    id="checkButton"
+    onclick="checkName()"
+    data-i18n="continueButton">
+
+    继续
+
+  </button>
+
+</div>
+
+<!-- =========================
+     Step 2
+========================== -->
+
+<div
+  id="confirmStep"
+  class="hidden">
+
+  <h1 data-i18n="confirmTitle">
+
+    确认身份
+
+  </h1>
+
+  <div
+    class="description"
+    data-i18n="confirmDescription">
+
+    系统发现这个姓名已经注册过。
+    <br>
+    请确认这是您本人。
+
+  </div>
+
+  <div
+    id="confirmName"
+    class="confirm-name">
+  </div>
+
+  <div class="button-row">
+
+    <button
+      class="secondary"
+      onclick="backToNameStep()"
+      data-i18n="notMeButton">
+
+      不是
+
+    </button>
+
+    <button
+      id="confirmButton"
+      onclick="confirmExistingUser()"
+      data-i18n="isMeButton">
+
+      是我的
+
+    </button>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     Step 3
+========================== -->
+
+<div
+  id="successStep"
+  class="hidden">
+
+  <h1 data-i18n="successTitle">
+
+    设置完成
+
+  </h1>
+
+  <div
+    id="successMessage"
+    class="message success">
+  </div>
+
+  <div class="device-id">
+
+    <span data-i18n="deviceIdLabel">
+
+      Device ID：
+
+    </span>
+
+    <span id="deviceIdDisplay"></span>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     Message
+========================== -->
+
+<div
+  id="message"
+  class="message hidden">
+</div>
+
+</div> </div> <script>
+/*************************************************
+
+GAS Web App URL
+*************************************************/
+const GAS_WEB_APP_URL =
+'https://script.google.com/macros/s/AKfycbxz1vbqjVOIcDD_GenDog-N4eEiD1_rBKHHRl0xovwKT_xfZWwUm0-rjjuNvjYG0Jlj/exec';
+
+/*************************************************
+
+LocalStorage Keys
+*************************************************/
+const DEVICE_ID_STORAGE_KEY =
+'badminton_v2_device_id';
+
+const LANGUAGE_STORAGE_KEY =
+'badminton_v2_language';
+
+/*************************************************
+
+Global Variables
+*************************************************/
+let deviceId = '';
+
+let currentUserName = '';
+
+let currentLanguage = 'zh';
+
+/*************************************************
+
+Translations
+*************************************************/
+const translations = {
+
+zh: {
+
+pageTitle:
+  '通知设置',
+
+title:
+  '通知设置',
+
+description:
+  '在这台手机上设置羽毛球通知。',
+
+nameLabel:
+  '姓名',
+
+namePlaceholder:
+  '请输入您的姓名',
+
+continueButton:
+  '继续',
+
+confirmTitle:
+  '确认身份',
+
+confirmDescription:
+  '系统发现这个姓名已经注册过。<br>请确认这是您本人。',
+
+notMeButton:
+  '不是',
+
+isMeButton:
+  '是我的',
+
+successTitle:
+  '设置完成',
+
+deviceIdLabel:
+  'Device ID：',
+
+checking:
+  '检查中...',
+
+registering:
+  '注册中...',
+
+emptyName:
+  '请输入姓名。',
+
+registerSuccess:
+  '设备注册成功。通知已经开启。',
+
+checkError:
+  '检查姓名时发生错误。',
+
+registerError:
+  '设备注册失败。',
+
+serverError:
+  '服务器通信失败。',
+
+storageError:
+  '无法保存设备 ID，请确认浏览器允许使用本地存储。'
+
+},
+
+ja: {
+
+pageTitle:
+  '通知設定',
+
+title:
+  '通知設定',
+
+description:
+  'このスマートフォンでバドミントン通知を設定します。',
+
+nameLabel:
+  'お名前',
+
+namePlaceholder:
+  'お名前を入力してください',
+
+continueButton:
+  '次へ',
+
+confirmTitle:
+  '本人確認',
+
+confirmDescription:
+  'この名前はすでに登録されています。<br>ご本人かどうか確認してください。',
+
+notMeButton:
+  '違います',
+
+isMeButton:
+  '本人です',
+
+successTitle:
+  '設定完了',
+
+deviceIdLabel:
+  'Device ID：',
+
+checking:
+  '確認中...',
+
+registering:
+  '登録中...',
+
+emptyName:
+  'お名前を入力してください。',
+
+registerSuccess:
+  '端末の登録が完了しました。通知が有効になっています。',
+
+checkError:
+  '名前の確認中にエラーが発生しました。',
+
+registerError:
+  '端末の登録に失敗しました。',
+
+serverError:
+  'サーバーとの通信に失敗しました。',
+
+storageError:
+  '端末IDを保存できません。ブラウザのローカルストレージを確認してください。'
+
+}
+
+};
+
+/*************************************************
+
+Page Startup
+*************************************************/
+document.addEventListener(
+'DOMContentLoaded',
+function() {
+
+initializeLanguage();
+
+initializeDevice();
+
+}
+);
+
+/*************************************************
+
+Initialize Language
+*************************************************/
+function initializeLanguage() {
+
+try {
+
+const savedLanguage =
+  localStorage.getItem(
+    LANGUAGE_STORAGE_KEY
+  );
+
+if (
+  savedLanguage === 'zh' ||
+  savedLanguage === 'ja'
+) {
+
+  currentLanguage =
+    savedLanguage;
+
+} else {
+
+  const browserLanguage =
+    navigator.language || '';
+
+  if (
+    browserLanguage
+      .toLowerCase()
+      .startsWith('ja')
+  ) {
+
+    currentLanguage =
+      'ja';
+
+  } else {
+
+    currentLanguage =
+      'zh';
+
+  }
+
+}
+
+} catch (error) {
+
+currentLanguage =
+  'zh';
+
+}
+
+applyLanguage();
+
+}
+
+/*************************************************
+
+Set Language
+*************************************************/
+function setLanguage(language) {
+
+if (
+language !== 'zh' &&
+language !== 'ja'
+) {
+
+return;
+
+}
+
+currentLanguage =
+language;
+
+try {
+
+localStorage.setItem(
+  LANGUAGE_STORAGE_KEY,
+  language
+);
+
+} catch (error) {
+
+// Language persistence is optional.
+
+}
+
+applyLanguage();
+
+}
+
+/*************************************************
+
+Apply Language
+*************************************************/
+function applyLanguage() {
+
+const texts =
+translations[currentLanguage];
+
+/*
+
+Normal text
+*/
+document
+.querySelectorAll('[data-i18n]')
+.forEach(function(element) {
+
+  const key =
+    element.getAttribute(
+      'data-i18n'
+    );
+
+  if (
+    texts[key] !== undefined
+  ) {
+
+    element.innerHTML =
+      texts[key];
+
+  }
+
+});
+
+/*
+
+Placeholder
+*/
+document
+.querySelectorAll('[data-i18n-placeholder]')
+.forEach(function(element) {
+
+  const key =
+    element.getAttribute(
+      'data-i18n-placeholder'
+    );
+
+  if (
+    texts[key] !== undefined
+  ) {
+
+    element.placeholder =
+      texts[key];
+
+  }
+
+});
+
+/*
+
+Page title
+*/
+document.title =
+texts.pageTitle;
+
+/*
+
+Language buttons
+*/
+document
+.getElementById('languageZh')
+.classList.toggle(
+'active',
+currentLanguage === 'zh'
+);
+
+document
+.getElementById('languageJa')
+.classList.toggle(
+'active',
+currentLanguage === 'ja'
+);
+
+}
+
+/*************************************************
+
+Initialize Device ID
+*************************************************/
+function initializeDevice() {
+
+try {
+
+deviceId =
+  localStorage.getItem(
+    DEVICE_ID_STORAGE_KEY
+  );
+
+
+if (!deviceId) {
+
+  deviceId =
+    generateDeviceId();
+
+  localStorage.setItem(
+    DEVICE_ID_STORAGE_KEY,
+    deviceId
+  );
+
+}
+
+
+console.log(
+  'device_id:',
+  deviceId
+);
+
+} catch (error) {
+
+showMessage(
+  translations[currentLanguage]
+    .storageError,
+  'error'
+);
+
+}
+
+}
+
+/*************************************************
+
+Generate Device ID
+*************************************************/
+function generateDeviceId() {
+
+const randomPart =
+Math.random()
+.toString(36)
+.substring(2, 10);
+
+const timePart =
+Date.now().toString(36);
+
+return (
+'device_' +
+timePart +
+'_' +
+randomPart
+);
+
+}
+
+/*************************************************
+
+Build GAS API URL
+*************************************************/
+function buildApiUrl(action, params) {
+
+const url =
+new URL(GAS_WEB_APP_URL);
+
+url.searchParams.set(
+'action',
+action
+);
+
+if (params) {
+
+Object.keys(params)
+  .forEach(function(key) {
+
+    const value =
+      params[key];
+
+    if (
+      value !== undefined &&
+      value !== null
+    ) {
+
+      url.searchParams.set(
+        key,
+        value
+      );
+
+    }
+
+  });
+
+}
+
+return url.toString();
+
+}
+
+/*************************************************
+
+Generic GET API
+*************************************************/
+async function callGasApi(
+action,
+params
+) {
+
+const url =
+buildApiUrl(
+action,
+params
+);
+
+console.log(
+'GAS API:',
+url
+);
+
+const response =
+await fetch(
+url,
+{
+method: 'GET'
+}
+);
+
+console.log(
+'HTTP status:',
+response.status
+);
+
+if (!response.ok) {
+
+throw new Error(
+  'HTTP ' +
+  response.status
+);
+
+}
+
+const result =
+await response.json();
+
+console.log(
+'GAS API response:',
+result
+);
+
+return result;
+
+}
+
+/*************************************************
+
+Check Name
+*************************************************/
+async function checkName() {
+
+const input =
+document.getElementById(
+'userName'
+);
+
+const name =
+input.value.trim();
+
+if (!name) {
+
+showMessage(
+  translations[currentLanguage]
+    .emptyName,
+  'error'
+);
+
+input.focus();
+
+return;
+
+}
+
+currentUserName =
+name;
+
+setCheckButtonLoading(
+true
+);
+
+hideMessage();
+
+try {
+
+const result =
+  await callGasApi(
+    'checkUserName',
+    {
+      userName:
+        currentUserName
+    }
+  );
+
+
+if (
+  !result ||
+  result.success === false
+) {
+
+  showMessage(
+    result &&
+    result.message
+      ? result.message
+      : translations[currentLanguage]
+          .checkError,
+    'error'
+  );
+
+  return;
+
+}
+
+
+/*
+ * New user
+ */
+
+if (!result.exists) {
+
+  await registerCurrentDevice();
+
+  return;
+
+}
+
+
+/*
+ * Existing user
+ */
+
+document
+  .getElementById('nameStep')
+  .classList.add('hidden');
+
+
+document
+  .getElementById('confirmStep')
+  .classList.remove('hidden');
+
+
+document
+  .getElementById('confirmName')
+  .textContent =
+    currentUserName;
+
+} catch (error) {
+
+console.error(
+  'checkName error:',
+  error
+);
+
+
+showMessage(
+  translations[currentLanguage]
+    .serverError +
+  '\n' +
+  (
+    error.message || ''
+  ),
+  'error'
+);
+
+} finally {
+
+setCheckButtonLoading(
+  false
+);
+
+}
+
+}
+
+/*************************************************
+
+Register Current Device
+*************************************************/
+async function registerCurrentDevice() {
+
+setRegisterButtonLoading(
+true
+);
+
+hideMessage();
+
+const data = {
+
+deviceId:
+  deviceId,
+
+userName:
+  currentUserName,
+
+/*
+ * FCM 暂时不接
+ */
+fcmToken:
+  '',
+
+platform:
+  getPlatform()
+
+};
+
+try {
+
+const result =
+  await callGasApi(
+    'registerDevice',
+    data
+  );
+
+
+if (
+  !result ||
+  result.success === false
+) {
+
+  showMessage(
+    result &&
+    result.message
+      ? result.message
+      : translations[currentLanguage]
+          .registerError,
+    'error'
+  );
+
+  return;
+
+}
+
+
+console.log(
+  'register result:',
+  result
+);
+
+
+showSuccess();
+
+} catch (error) {
+
+console.error(
+  'registerCurrentDevice error:',
+  error
+);
+
+
+showMessage(
+  translations[currentLanguage]
+    .serverError +
+  '\n' +
+  (
+    error.message || ''
+  ),
+  'error'
+);
+
+} finally {
+
+setRegisterButtonLoading(
+  false
+);
+
+}
+
+}
+
+/*************************************************
+
+Confirm Existing User
+*************************************************/
+async function confirmExistingUser() {
+
+await registerCurrentDevice();
+
+}
+
+/*************************************************
+
+Back To Name Step
+*************************************************/
+function backToNameStep() {
+
+document
+.getElementById('confirmStep')
+.classList.add('hidden');
+
+document
+.getElementById('nameStep')
+.classList.remove('hidden');
+
+hideMessage();
+
+}
+
+/*************************************************
+
+Show Success
+*************************************************/
+function showSuccess() {
+
+const texts =
+translations[currentLanguage];
+
+document
+.getElementById('nameStep')
+.classList.add('hidden');
+
+document
+.getElementById('confirmStep')
+.classList.add('hidden');
+
+document
+.getElementById('successStep')
+.classList.remove('hidden');
+
+document
+.getElementById('successMessage')
+.textContent =
+texts.registerSuccess;
+
+document
+.getElementById('deviceIdDisplay')
+.textContent =
+deviceId;
+
+}
+
+/*************************************************
+
+Platform Detection
+*************************************************/
+function getPlatform() {
+
+const ua =
+navigator.userAgent || '';
+
+if (
+/Android/i.test(ua)
+) {
+
+return 'android';
+
+}
+
+if (
+/iPhone|iPad|iPod/i.test(ua)
+) {
+
+return 'ios';
+
+}
+
+return 'web';
+
+}
+
+/*************************************************
+
+Show Message
+*************************************************/
+function showMessage(
+message,
+type
+) {
+
+const element =
+document.getElementById(
+'message'
+);
+
+element.textContent =
+message;
+
+element.className =
+'message ' +
+(type || '');
+
+}
+
+/*************************************************
+
+Hide Message
+*************************************************/
+function hideMessage() {
+
+const element =
+document.getElementById(
+'message'
+);
+
+element.className =
+'message hidden';
+
+element.textContent =
+'';
+
+}
+
+/*************************************************
+
+Check Button Loading
+*************************************************/
+function setCheckButtonLoading(
+isLoading
+) {
+
+const button =
+document.getElementById(
+'checkButton'
+);
+
+const texts =
+translations[currentLanguage];
+
+if (isLoading) {
+
+button.disabled =
+  true;
+
+button.textContent =
+  texts.checking;
+
+} else {
+
+button.disabled =
+  false;
+
+button.textContent =
+  texts.continueButton;
+
+}
+
+}
+
+/*************************************************
+
+Register Button Loading
+*************************************************/
+function setRegisterButtonLoading(
+isLoading
+) {
+
+const confirmButton =
+document.getElementById(
+'confirmButton'
+);
+
+const texts =
+translations[currentLanguage];
+
+if (isLoading) {
+
+confirmButton.disabled =
+  true;
+
+confirmButton.textContent =
+  texts.registering;
+
+} else {
+
+confirmButton.disabled =
+  false;
+
+confirmButton.textContent =
+  texts.isMeButton;
+
+}
+
+}
+
+</script> </body> </html>
