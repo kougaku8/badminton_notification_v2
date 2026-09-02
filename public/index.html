@@ -3,7 +3,7 @@
 name="viewport"
 content="width=device-width, initial-scale=1.0"
 
-<title id="pageTitle">通知设置</title> <style>
+<title id="pageTitle">通知设置</title> <!-- Firebase --> <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script> <style>
 * {
   box-sizing: border-box;
 }
@@ -40,7 +40,7 @@ body {
 }
 
 /* =========================
-   Language Switch
+   Language
 ========================== */
 
 .language-switch {
@@ -58,9 +58,11 @@ body {
   padding: 7px 12px;
 
   border: 1px solid #ccc;
+
   border-radius: 8px;
 
   background: #ffffff;
+
   color: #555;
 
   font-size: 13px;
@@ -182,6 +184,8 @@ button:disabled {
   font-size: 14px;
 
   line-height: 1.5;
+
+  white-space: pre-line;
 }
 
 .success {
@@ -232,6 +236,22 @@ button:disabled {
 
 .button-row button {
   flex: 1;
+}
+
+.notification-status {
+  margin-top: 18px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: #fff8e1;
+
+  color: #795548;
+
+  font-size: 14px;
+
+  line-height: 1.5;
 }
 
 </style> </head> <body> <div class="container"> <div class="card">
@@ -394,6 +414,11 @@ button:disabled {
 
   </div>
 
+  <div
+    id="fcmStatus"
+    class="notification-status">
+  </div>
+
 </div>
 
 <!-- =========================
@@ -408,14 +433,49 @@ button:disabled {
 </div> </div> <script>
 /*************************************************
 
-GAS Web App URL
+GAS Web App
 *************************************************/
 const GAS_WEB_APP_URL =
 'https://script.google.com/macros/s/AKfycbxz1vbqjVOIcDD_GenDog-N4eEiD1_rBKHHRl0xovwKT_xfZWwUm0-rjjuNvjYG0Jlj/exec';
 
 /*************************************************
 
-LocalStorage Keys
+Firebase Config
+↓↓↓ 请替换成你自己的 Firebase Config ↓↓↓
+*************************************************/
+const firebaseConfig = {
+
+apiKey:
+'AIzaSyD6DUuQto_5BYZJDgkaI8CBGaOQkXMgrCk',
+
+authDomain:
+'badminton-notification.firebaseapp.com',
+
+projectId:
+'badminton-notification',
+
+storageBucket:
+'badminton-notification.firebasestorage.app',
+
+messagingSenderId:
+'419794096766',
+
+appId:
+'1:419794096766:web:9dd990fe827719d149fe2f'
+
+};
+
+/*************************************************
+
+VAPID Key
+↓↓↓ 请替换成你自己的 VAPID Public Key ↓↓↓
+*************************************************/
+const VAPID_KEY =
+'BEzm7tEPH4F7nr5saymZsJqdnF_h_DlTZWgXsN6cDOjb4VVJIGseCnJLPwW37ko_uulqKjhPtjlg-9kYHjTzSJI';
+
+/*************************************************
+
+LocalStorage
 *************************************************/
 const DEVICE_ID_STORAGE_KEY =
 'badminton_v2_device_id';
@@ -425,7 +485,7 @@ const LANGUAGE_STORAGE_KEY =
 
 /*************************************************
 
-Global Variables
+Global
 *************************************************/
 let deviceId = '';
 
@@ -433,9 +493,13 @@ let currentUserName = '';
 
 let currentLanguage = 'zh';
 
+let messaging = null;
+
+let firebaseInitialized = false;
+
 /*************************************************
 
-Translations
+Translation
 *************************************************/
 const translations = {
 
@@ -487,13 +551,25 @@ emptyName:
   '请输入姓名。',
 
 registerSuccess:
-  '设备注册成功。通知已经开启。',
+  '设备注册成功。',
 
-checkError:
-  '检查姓名时发生错误。',
+fcmGetting:
+  '正在取得通知权限和 FCM Token...',
+
+fcmSuccess:
+  '通知权限已开启，FCM Token 已保存。',
+
+fcmDenied:
+  '通知权限未开启，因此暂时无法接收通知。',
+
+fcmError:
+  'FCM Token 获取失败。',
 
 registerError:
   '设备注册失败。',
+
+checkError:
+  '检查姓名时发生错误。',
 
 serverError:
   '服务器通信失败。',
@@ -551,13 +627,25 @@ emptyName:
   'お名前を入力してください。',
 
 registerSuccess:
-  '端末の登録が完了しました。通知が有効になっています。',
+  '端末の登録が完了しました。',
 
-checkError:
-  '名前の確認中にエラーが発生しました。',
+fcmGetting:
+  '通知許可と FCM Token を取得しています...',
+
+fcmSuccess:
+  '通知が有効になり、FCM Token が保存されました。',
+
+fcmDenied:
+  '通知が許可されていないため、通知を受信できません。',
+
+fcmError:
+  'FCM Token の取得に失敗しました。',
 
 registerError:
   '端末の登録に失敗しました。',
+
+checkError:
+  '名前の確認中にエラーが発生しました。',
 
 serverError:
   'サーバーとの通信に失敗しました。',
@@ -571,7 +659,7 @@ storageError:
 
 /*************************************************
 
-Page Startup
+Startup
 *************************************************/
 document.addEventListener(
 'DOMContentLoaded',
@@ -581,12 +669,82 @@ initializeLanguage();
 
 initializeDevice();
 
+initializeFirebase();
+
 }
 );
 
 /*************************************************
 
-Initialize Language
+Firebase Initialize
+*************************************************/
+function initializeFirebase() {
+
+try {
+
+/*
+ * 防止忘记替换 Firebase Config
+ */
+
+if (
+  firebaseConfig.apiKey ===
+    'AIzaSyD6DUuQto_5BYZJDgkaI8CBGaOQkXMgrCk'
+) {
+
+  console.warn(
+    'Firebase Config 尚未设置。'
+  );
+
+  return;
+
+}
+
+
+if (
+  VAPID_KEY ===
+    'BEzm7tEPH4F7nr5saymZsJqdnF_h_DlTZWgXsN6cDOjb4VVJIGseCnJLPwW37ko_uulqKjhPtjlg-9kYHjTzSJI'
+) {
+
+  console.warn(
+    'VAPID Key 尚未设置。'
+  );
+
+  return;
+
+}
+
+
+firebase.initializeApp(
+  firebaseConfig
+);
+
+
+messaging =
+  firebase.messaging();
+
+
+firebaseInitialized =
+  true;
+
+
+console.log(
+  'Firebase Messaging initialized.'
+);
+
+} catch (error) {
+
+console.error(
+  'Firebase initialization failed:',
+  error
+);
+
+}
+
+}
+
+/*************************************************
+
+Language
 *************************************************/
 function initializeLanguage() {
 
@@ -596,6 +754,7 @@ const savedLanguage =
   localStorage.getItem(
     LANGUAGE_STORAGE_KEY
   );
+
 
 if (
   savedLanguage === 'zh' ||
@@ -609,6 +768,7 @@ if (
 
   const browserLanguage =
     navigator.language || '';
+
 
   if (
     browserLanguage
@@ -665,9 +825,6 @@ localStorage.setItem(
 );
 
 } catch (error) {
-
-// Language persistence is optional.
-
 }
 
 applyLanguage();
@@ -683,10 +840,6 @@ function applyLanguage() {
 const texts =
 translations[currentLanguage];
 
-/*
-
-Normal text
-*/
 document
 .querySelectorAll('[data-i18n]')
 .forEach(function(element) {
@@ -695,6 +848,7 @@ document
     element.getAttribute(
       'data-i18n'
     );
+
 
   if (
     texts[key] !== undefined
@@ -707,10 +861,6 @@ document
 
 });
 
-/*
-
-Placeholder
-*/
 document
 .querySelectorAll('[data-i18n-placeholder]')
 .forEach(function(element) {
@@ -719,6 +869,7 @@ document
     element.getAttribute(
       'data-i18n-placeholder'
     );
+
 
   if (
     texts[key] !== undefined
@@ -731,17 +882,9 @@ document
 
 });
 
-/*
-
-Page title
-*/
 document.title =
 texts.pageTitle;
 
-/*
-
-Language buttons
-*/
 document
 .getElementById('languageZh')
 .classList.toggle(
@@ -760,7 +903,7 @@ currentLanguage === 'ja'
 
 /*************************************************
 
-Initialize Device ID
+Device ID
 *************************************************/
 function initializeDevice() {
 
@@ -776,6 +919,7 @@ if (!deviceId) {
 
   deviceId =
     generateDeviceId();
+
 
   localStorage.setItem(
     DEVICE_ID_STORAGE_KEY,
@@ -827,9 +971,12 @@ randomPart
 
 /*************************************************
 
-Build GAS API URL
+Build GAS URL
 *************************************************/
-function buildApiUrl(action, params) {
+function buildApiUrl(
+action,
+params
+) {
 
 const url =
 new URL(GAS_WEB_APP_URL);
@@ -846,6 +993,7 @@ Object.keys(params)
 
     const value =
       params[key];
+
 
     if (
       value !== undefined &&
@@ -869,7 +1017,7 @@ return url.toString();
 
 /*************************************************
 
-Generic GET API
+GAS API
 *************************************************/
 async function callGasApi(
 action,
@@ -884,7 +1032,7 @@ params
 
 console.log(
 'GAS API:',
-url
+action
 );
 
 const response =
@@ -893,11 +1041,6 @@ url,
 {
 method: 'GET'
 }
-);
-
-console.log(
-'HTTP status:',
-response.status
 );
 
 if (!response.ok) {
@@ -913,7 +1056,7 @@ const result =
 await response.json();
 
 console.log(
-'GAS API response:',
+'GAS response:',
 result
 );
 
@@ -952,9 +1095,7 @@ return;
 currentUserName =
 name;
 
-setCheckButtonLoading(
-true
-);
+setCheckButtonLoading(true);
 
 hideMessage();
 
@@ -989,10 +1130,6 @@ if (
 }
 
 
-/*
- * New user
- */
-
 if (!result.exists) {
 
   await registerCurrentDevice();
@@ -1001,10 +1138,6 @@ if (!result.exists) {
 
 }
 
-
-/*
- * Existing user
- */
 
 document
   .getElementById('nameStep')
@@ -1024,7 +1157,6 @@ document
 } catch (error) {
 
 console.error(
-  'checkName error:',
   error
 );
 
@@ -1041,9 +1173,7 @@ showMessage(
 
 } finally {
 
-setCheckButtonLoading(
-  false
-);
+setCheckButtonLoading(false);
 
 }
 
@@ -1051,16 +1181,52 @@ setCheckButtonLoading(
 
 /*************************************************
 
-Register Current Device
+Register Device + FCM
 *************************************************/
 async function registerCurrentDevice() {
 
-setRegisterButtonLoading(
-true
-);
+setRegisterButtonLoading(true);
 
 hideMessage();
 
+let fcmToken = '';
+
+/*
+
+Step 1
+Get FCM Token
+*/
+try {
+
+fcmToken =
+  await getFcmToken();
+
+} catch (error) {
+
+console.error(
+  'FCM error:',
+  error
+);
+
+
+/*
+ * 这一版不因为 FCM 失败
+ * 而阻止设备注册。
+ *
+ * 这样可以先确认：
+ * Firebase / FCM / GAS
+ * 各自的问题在哪里。
+ */
+
+fcmToken = '';
+
+}
+
+/*
+
+Step 2
+Register Device
+*/
 const data = {
 
 deviceId:
@@ -1069,11 +1235,8 @@ deviceId:
 userName:
   currentUserName,
 
-/*
- * FCM 暂时不接
- */
 fcmToken:
-  '',
+  fcmToken,
 
 platform:
   getPlatform()
@@ -1114,12 +1277,14 @@ console.log(
 );
 
 
-showSuccess();
+showSuccess(
+  Boolean(fcmToken)
+);
 
 } catch (error) {
 
 console.error(
-  'registerCurrentDevice error:',
+  'register error:',
   error
 );
 
@@ -1136,9 +1301,7 @@ showMessage(
 
 } finally {
 
-setRegisterButtonLoading(
-  false
-);
+setRegisterButtonLoading(false);
 
 }
 
@@ -1146,7 +1309,131 @@ setRegisterButtonLoading(
 
 /*************************************************
 
-Confirm Existing User
+Get FCM Token
+*************************************************/
+async function getFcmToken() {
+
+const texts =
+translations[currentLanguage];
+
+if (!firebaseInitialized) {
+
+console.warn(
+  'Firebase is not initialized.'
+);
+
+return '';
+
+}
+
+/*
+
+Service Worker
+*/
+if (
+!('serviceWorker' in navigator)
+) {
+
+throw new Error(
+  'Service Worker is not supported.'
+);
+
+}
+
+/*
+
+Notification API
+*/
+if (
+!('Notification' in window)
+) {
+
+throw new Error(
+  'Notification API is not supported.'
+);
+
+}
+
+/*
+
+Request permission
+*/
+let permission =
+Notification.permission;
+
+if (
+permission !== 'granted'
+) {
+
+permission =
+  await Notification.requestPermission();
+
+}
+
+console.log(
+'Notification permission:',
+permission
+);
+
+if (
+permission !== 'granted'
+) {
+
+throw new Error(
+  texts.fcmDenied
+);
+
+}
+
+/*
+
+Register Firebase Messaging SW
+*/
+const registration =
+await navigator.serviceWorker.register(
+'/firebase-messaging-sw.js'
+);
+
+console.log(
+'FCM service worker registered:',
+registration.scope
+);
+
+/*
+
+Get FCM registration token
+*/
+const token =
+await messaging.getToken({
+
+  vapidKey:
+    VAPID_KEY,
+
+  serviceWorkerRegistration:
+    registration
+
+});
+
+if (!token) {
+
+throw new Error(
+  texts.fcmError
+);
+
+}
+
+console.log(
+'FCM Token:',
+token
+);
+
+return token;
+
+}
+
+/*************************************************
+
+Existing User Confirmation
 *************************************************/
 async function confirmExistingUser() {
 
@@ -1156,7 +1443,7 @@ await registerCurrentDevice();
 
 /*************************************************
 
-Back To Name Step
+Back
 *************************************************/
 function backToNameStep() {
 
@@ -1174,9 +1461,11 @@ hideMessage();
 
 /*************************************************
 
-Show Success
+Success
 *************************************************/
-function showSuccess() {
+function showSuccess(
+hasFcmToken
+) {
 
 const texts =
 translations[currentLanguage];
@@ -1203,11 +1492,34 @@ document
 .textContent =
 deviceId;
 
+const fcmStatus =
+document.getElementById(
+'fcmStatus'
+);
+
+if (hasFcmToken) {
+
+fcmStatus.textContent =
+  texts.fcmSuccess;
+
+fcmStatus.className =
+  'message success';
+
+} else {
+
+fcmStatus.textContent =
+  texts.fcmError;
+
+fcmStatus.className =
+  'notification-status';
+
+}
+
 }
 
 /*************************************************
 
-Platform Detection
+Platform
 *************************************************/
 function getPlatform() {
 
@@ -1236,7 +1548,7 @@ return 'web';
 
 /*************************************************
 
-Show Message
+Message
 *************************************************/
 function showMessage(
 message,
@@ -1257,10 +1569,6 @@ element.className =
 
 }
 
-/*************************************************
-
-Hide Message
-*************************************************/
 function hideMessage() {
 
 const element =
@@ -1278,7 +1586,7 @@ element.textContent =
 
 /*************************************************
 
-Check Button Loading
+Loading
 *************************************************/
 function setCheckButtonLoading(
 isLoading
@@ -1292,35 +1600,21 @@ document.getElementById(
 const texts =
 translations[currentLanguage];
 
-if (isLoading) {
-
 button.disabled =
-  true;
+isLoading;
 
 button.textContent =
-  texts.checking;
-
-} else {
-
-button.disabled =
-  false;
-
-button.textContent =
-  texts.continueButton;
+isLoading
+? texts.checking
+: texts.continueButton;
 
 }
 
-}
-
-/*************************************************
-
-Register Button Loading
-*************************************************/
 function setRegisterButtonLoading(
 isLoading
 ) {
 
-const confirmButton =
+const button =
 document.getElementById(
 'confirmButton'
 );
@@ -1328,23 +1622,13 @@ document.getElementById(
 const texts =
 translations[currentLanguage];
 
-if (isLoading) {
+button.disabled =
+isLoading;
 
-confirmButton.disabled =
-  true;
-
-confirmButton.textContent =
-  texts.registering;
-
-} else {
-
-confirmButton.disabled =
-  false;
-
-confirmButton.textContent =
-  texts.isMeButton;
-
-}
+button.textContent =
+isLoading
+? texts.registering
+: texts.isMeButton;
 
 }
 
