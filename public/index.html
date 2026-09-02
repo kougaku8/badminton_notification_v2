@@ -1,89 +1,160 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="zh-CN">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <meta charset="UTF-8" />
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.18.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.18.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.18.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
+    <title>Badminton Notification V2 - API Test</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 40px 20px;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP",
+          sans-serif;
+        background: #f5f7fa;
+        color: #222;
+      }
+
+      .container {
+        max-width: 480px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 22px;
+        text-align: center;
+      }
+
+      .description {
+        color: #666;
+        line-height: 1.6;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        border: 0;
+        border-radius: 10px;
+        background: #4285f4;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        background: #aaa;
+      }
+
+      #result {
+        margin-top: 20px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #f1f3f4;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: monospace;
+        font-size: 13px;
+      }
+
+      .success {
+        background: #e6f4ea !important;
+        color: #137333;
+      }
+
+      .error {
+        background: #fce8e6 !important;
+        color: #c5221f;
       }
     </style>
   </head>
+
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div class="container">
+      <div class="card">
+        <h1>Firebase → GAS API Test</h1>
+
+        <div class="description">
+          测试 Firebase Hosting 是否可以通过 HTTP API 连接到 Google Apps
+          Script。
+        </div>
+
+        <button id="testButton" onclick="testGasApi()">测试 GAS API</button>
+
+        <div id="result">尚未测试。</div>
+      </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+      /*************************************************
+       * GAS Web App URL
+       *************************************************/
+
+      const GAS_WEB_APP_URL =
+        "https://script.google.com/macros/s/AKfycbxz1vbqjVOIcDD_GenDog-N4eEiD1_rBKHHRl0xovwKT_xfZWwUm0-rjjuNvjYG0Jlj/exec";
+
+      /*************************************************
+       * 测试 GAS API
+       *************************************************/
+
+      async function testGasApi() {
+        const button = document.getElementById("testButton");
+
+        const result = document.getElementById("result");
+
+        button.disabled = true;
+
+        result.className = "";
+
+        result.textContent = "正在连接 GAS...";
 
         try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+          const url =
+            GAS_WEB_APP_URL + "?action=checkUserName" + "&userName=TestUser";
+
+          console.log("Request URL:", url);
+
+          const response = await fetch(url, {
+            method: "GET",
+          });
+
+          console.log("HTTP status:", response.status);
+
+          if (!response.ok) {
+            throw new Error("HTTP Error: " + response.status);
+          }
+
+          const data = await response.json();
+
+          console.log("API response:", data);
+
+          result.className = "success";
+
+          result.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          console.error("API error:", error);
+
+          result.className = "error";
+
+          result.textContent = "API 调用失败：\n\n" + error.message;
+        } finally {
+          button.disabled = false;
         }
-      });
+      }
     </script>
   </body>
 </html>

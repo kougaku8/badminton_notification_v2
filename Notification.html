@@ -1,749 +1,1069 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top" />
+<head>
+  <base target="_top">
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-    <title id="pageTitle">通知设置</title>
+  <title id="pageTitle">通知设置</title>
 
-    <style>
-      * {
-        box-sizing: border-box;
-      }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-      body {
-        margin: 0;
-        padding: 24px 16px;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP",
-          sans-serif;
-        background: #f5f7fa;
-        color: #222;
-      }
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        sans-serif;
+      background: #f5f7fa;
+      color: #222;
+    }
 
-      .container {
-        max-width: 480px;
-        margin: 0 auto;
-      }
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
 
-      .card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 24px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-      }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
 
-      /* =========================
+    /* =========================
        Language Switch
     ========================== */
 
-      .language-switch {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 18px;
-      }
+    .language-switch {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 18px;
+    }
 
-      .language-button {
-        width: auto;
-        margin: 0;
-        padding: 7px 12px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background: #ffffff;
-        color: #555;
-        font-size: 13px;
-        cursor: pointer;
-      }
+    .language-button {
+      width: auto;
+      margin: 0;
+      padding: 7px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #555;
+      font-size: 13px;
+      cursor: pointer;
+    }
 
-      .language-button.active {
-        background: #4285f4;
-        border-color: #4285f4;
-        color: #ffffff;
-      }
+    .language-button.active {
+      background: #4285f4;
+      border-color: #4285f4;
+      color: #ffffff;
+    }
 
-      .language-separator {
-        margin: 0 6px;
-        color: #aaa;
-        line-height: 30px;
-      }
+    .language-separator {
+      margin: 0 6px;
+      color: #aaa;
+      line-height: 30px;
+    }
 
-      /* =========================
+    /* =========================
        General
     ========================== */
 
-      h1 {
-        margin-top: 0;
-        font-size: 24px;
-        text-align: center;
-      }
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      text-align: center;
+    }
 
-      .description {
-        color: #666;
-        line-height: 1.6;
-        font-size: 14px;
-        text-align: center;
-        margin-bottom: 24px;
-      }
+    .description {
+      color: #666;
+      line-height: 1.6;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
 
-      label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-      }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
 
-      input {
-        width: 100%;
-        padding: 13px 14px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        font-size: 16px;
-        outline: none;
-      }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+    }
 
-      input:focus {
-        border-color: #4285f4;
-      }
+    input:focus {
+      border-color: #4285f4;
+    }
 
-      button {
-        width: 100%;
-        margin-top: 16px;
-        padding: 13px;
-        border: 0;
-        border-radius: 10px;
-        background: #4285f4;
-        color: white;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-      }
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px;
+      border: 0;
+      border-radius: 10px;
+      background: #4285f4;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
 
-      button:disabled {
-        background: #aaa;
-        cursor: not-allowed;
-      }
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
 
-      .secondary {
-        background: #777;
-      }
+    .secondary {
+      background: #777;
+    }
 
-      .hidden {
-        display: none;
-      }
+    .hidden {
+      display: none;
+    }
 
-      .message {
-        margin-top: 18px;
-        padding: 12px;
-        border-radius: 10px;
-        background: #f1f3f4;
-        font-size: 14px;
-        line-height: 1.5;
-      }
+    .message {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f1f3f4;
+      font-size: 14px;
+      line-height: 1.5;
+    }
 
-      .success {
-        background: #e6f4ea;
-        color: #137333;
-      }
+    .success {
+      background: #e6f4ea;
+      color: #137333;
+    }
 
-      .error {
-        background: #fce8e6;
-        color: #c5221f;
-      }
+    .error {
+      background: #fce8e6;
+      color: #c5221f;
+    }
 
-      .device-id {
-        margin-top: 12px;
-        padding: 10px;
-        background: #f1f3f4;
-        border-radius: 8px;
-        word-break: break-all;
-        font-family: monospace;
-        font-size: 12px;
-        color: #555;
-      }
+    .device-id {
+      margin-top: 12px;
+      padding: 10px;
+      background: #f1f3f4;
+      border-radius: 8px;
+      word-break: break-all;
+      font-family: monospace;
+      font-size: 12px;
+      color: #555;
+    }
 
-      .confirm-name {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-        margin: 20px 0;
-      }
+    .confirm-name {
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0;
+    }
 
-      .button-row {
-        display: flex;
-        gap: 10px;
-      }
+    .button-row {
+      display: flex;
+      gap: 10px;
+    }
 
-      .button-row button {
-        flex: 1;
-      }
-    </style>
-  </head>
+    .button-row button {
+      flex: 1;
+    }
+  </style>
+</head>
 
-  <body>
-    <div class="container">
-      <div class="card">
-        <!-- =========================
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <!-- =========================
          Language Switch
     ========================== -->
 
-        <div class="language-switch">
-          <button
-            id="languageZh"
-            class="language-button"
-            onclick="setLanguage('zh')"
-          >
-            中文
-          </button>
+    <div class="language-switch">
 
-          <span class="language-separator">|</span>
+      <button
+        id="languageZh"
+        class="language-button"
+        onclick="setLanguage('zh')">
+        中文
+      </button>
 
-          <button
-            id="languageJa"
-            class="language-button"
-            onclick="setLanguage('ja')"
-          >
-            日本語
-          </button>
-        </div>
+      <span class="language-separator">|</span>
 
-        <!-- =========================
+      <button
+        id="languageJa"
+        class="language-button"
+        onclick="setLanguage('ja')">
+        日本語
+      </button>
+
+    </div>
+
+
+    <!-- =========================
          Step 1
     ========================== -->
 
-        <div id="nameStep">
-          <h1 data-i18n="title">通知设置</h1>
+    <div id="nameStep">
 
-          <div class="description" data-i18n="description">
-            在这台手机上设置羽毛球通知。
-          </div>
+      <h1 data-i18n="title">
+        通知设置
+      </h1>
 
-          <label for="userName" data-i18n="nameLabel"> 姓名 </label>
+      <div
+        class="description"
+        data-i18n="description">
+        在这台手机上设置羽毛球通知。
+      </div>
 
-          <input
-            id="userName"
-            type="text"
-            data-i18n-placeholder="namePlaceholder"
-            placeholder="请输入您的姓名"
-            autocomplete="name"
-          />
+      <label
+        for="userName"
+        data-i18n="nameLabel">
+        姓名
+      </label>
 
-          <button
-            id="checkButton"
-            onclick="checkName()"
-            data-i18n="continueButton"
-          >
-            继续
-          </button>
-        </div>
+      <input
+        id="userName"
+        type="text"
+        data-i18n-placeholder="namePlaceholder"
+        placeholder="请输入您的姓名"
+        autocomplete="name"
+      >
 
-        <!-- =========================
+      <button
+        id="checkButton"
+        onclick="checkName()"
+        data-i18n="continueButton">
+        继续
+      </button>
+
+    </div>
+
+
+    <!-- =========================
          Step 2
     ========================== -->
 
-        <div id="confirmStep" class="hidden">
-          <h1 data-i18n="confirmTitle">确认身份</h1>
+    <div id="confirmStep" class="hidden">
 
-          <div class="description" data-i18n="confirmDescription">
-            系统发现这个姓名已经注册过。
-            <br />
-            请确认这是您本人。
-          </div>
+      <h1 data-i18n="confirmTitle">
+        确认身份
+      </h1>
 
-          <div id="confirmName" class="confirm-name"></div>
+      <div
+        class="description"
+        data-i18n="confirmDescription">
+        系统发现这个姓名已经注册过。
+        <br>
+        请确认这是您本人。
+      </div>
 
-          <div class="button-row">
-            <button
-              class="secondary"
-              onclick="backToNameStep()"
-              data-i18n="notMeButton"
-            >
-              不是
-            </button>
+      <div
+        id="confirmName"
+        class="confirm-name">
+      </div>
 
-            <button onclick="confirmExistingUser()" data-i18n="isMeButton">
-              是我的
-            </button>
-          </div>
-        </div>
+      <div class="button-row">
 
-        <!-- =========================
+        <button
+          class="secondary"
+          onclick="backToNameStep()"
+          data-i18n="notMeButton">
+          不是
+        </button>
+
+        <button
+          onclick="confirmExistingUser()"
+          data-i18n="isMeButton">
+          是我的
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
          Step 3
     ========================== -->
 
-        <div id="successStep" class="hidden">
-          <h1 data-i18n="successTitle">设置完成</h1>
+    <div id="successStep" class="hidden">
 
-          <div id="successMessage" class="message success"></div>
+      <h1 data-i18n="successTitle">
+        设置完成
+      </h1>
 
-          <div class="device-id">
-            <span data-i18n="deviceIdLabel"> Device ID： </span>
-            <span id="deviceIdDisplay"></span>
-          </div>
-        </div>
+      <div
+        id="successMessage"
+        class="message success">
+      </div>
 
-        <!-- =========================
+      <div class="device-id">
+        <span data-i18n="deviceIdLabel">
+          Device ID：
+        </span>
+        <span id="deviceIdDisplay"></span>
+      </div>
+
+    </div>
+
+
+    <!-- =========================
          Message
     ========================== -->
 
-        <div id="message" class="message hidden"></div>
-      </div>
+    <div
+      id="message"
+      class="message hidden">
     </div>
 
-    <script>
-      /*************************************************
-       * 全局变量
-       *************************************************/
+  </div>
 
-      let deviceId = "";
-      let currentUserName = "";
+</div>
 
-      let currentLanguage = "zh";
 
-      /*************************************************
-       * 多语言文字
-       *************************************************/
+<script>
 
-      const translations = {
-        zh: {
-          pageTitle: "通知设置",
+/*************************************************
+ * 全局变量
+ *************************************************/
 
-          title: "通知设置",
+let deviceId = '';
+let currentUserName = '';
 
-          description: "在这台手机上设置羽毛球通知。",
+let currentLanguage = 'zh';
 
-          nameLabel: "姓名",
 
-          namePlaceholder: "请输入您的姓名",
+/*************************************************
+ * 多语言文字
+ *************************************************/
 
-          continueButton: "继续",
+const translations = {
 
-          confirmTitle: "确认身份",
+  zh: {
 
-          confirmDescription:
-            "系统发现这个姓名已经注册过。<br>请确认这是您本人。",
+    pageTitle:
+      '通知设置',
 
-          notMeButton: "不是",
+    title:
+      '通知设置',
 
-          isMeButton: "是我的",
+    description:
+      '在这台手机上设置羽毛球通知。',
 
-          successTitle: "设置完成",
+    nameLabel:
+      '姓名',
 
-          deviceIdLabel: "Device ID：",
+    namePlaceholder:
+      '请输入您的姓名',
 
-          checking: "检查中...",
+    continueButton:
+      '继续',
 
-          emptyName: "请输入姓名。",
+    confirmTitle:
+      '确认身份',
 
-          registerSuccess: "设备注册成功。通知已经开启。",
+    confirmDescription:
+      '系统发现这个姓名已经注册过。<br>请确认这是您本人。',
 
-          checkError: "检查姓名时发生错误。",
+    notMeButton:
+      '不是',
 
-          registerError: "设备注册失败。",
+    isMeButton:
+      '是我的',
 
-          serverError: "服务器通信失败。",
+    successTitle:
+      '设置完成',
 
-          storageError: "无法保存设备 ID，请确认浏览器允许使用本地存储。",
-        },
+    deviceIdLabel:
+      'Device ID：',
 
-        ja: {
-          pageTitle: "通知設定",
+    checking:
+      '检查中...',
 
-          title: "通知設定",
+    emptyName:
+      '请输入姓名。',
 
-          description: "このスマートフォンでバドミントン通知を設定します。",
+    registerSuccess:
+      '设备注册成功。通知已经开启。',
 
-          nameLabel: "お名前",
+    checkError:
+      '检查姓名时发生错误。',
 
-          namePlaceholder: "お名前を入力してください",
+    registerError:
+      '设备注册失败。',
 
-          continueButton: "次へ",
+    serverError:
+      '服务器通信失败。',
 
-          confirmTitle: "本人確認",
+    storageError:
+      '无法保存设备 ID，请确认浏览器允许使用本地存储。'
 
-          confirmDescription:
-            "この名前はすでに登録されています。<br>ご本人かどうか確認してください。",
+  },
 
-          notMeButton: "違います",
 
-          isMeButton: "本人です",
+  ja: {
 
-          successTitle: "設定完了",
+    pageTitle:
+      '通知設定',
 
-          deviceIdLabel: "Device ID：",
+    title:
+      '通知設定',
 
-          checking: "確認中...",
+    description:
+      'このスマートフォンでバドミントン通知を設定します。',
 
-          emptyName: "お名前を入力してください。",
+    nameLabel:
+      'お名前',
 
-          registerSuccess:
-            "端末の登録が完了しました。通知が有効になっています。",
+    namePlaceholder:
+      'お名前を入力してください',
 
-          checkError: "名前の確認中にエラーが発生しました。",
+    continueButton:
+      '次へ',
 
-          registerError: "端末の登録に失敗しました。",
+    confirmTitle:
+      '本人確認',
 
-          serverError: "サーバーとの通信に失敗しました。",
+    confirmDescription:
+      'この名前はすでに登録されています。<br>ご本人かどうか確認してください。',
 
-          storageError:
-            "端末IDを保存できません。ブラウザのローカルストレージを確認してください。",
-        },
-      };
+    notMeButton:
+      '違います',
 
-      /*************************************************
-       * 页面启动
-       *************************************************/
+    isMeButton:
+      '本人です',
 
-      document.addEventListener("DOMContentLoaded", function () {
-        initializeDevice();
+    successTitle:
+      '設定完了',
 
-        initializeLanguage();
-      });
+    deviceIdLabel:
+      'Device ID：',
 
-      /*************************************************
-       * 初始化语言
-       *************************************************/
+    checking:
+      '確認中...',
 
-      function initializeLanguage() {
-        try {
-          const savedLanguage = localStorage.getItem("badminton_v2_language");
+    emptyName:
+      'お名前を入力してください。',
 
-          if (savedLanguage === "zh" || savedLanguage === "ja") {
-            currentLanguage = savedLanguage;
-          } else {
-            /*
-             * 第一次打开：
-             * 根据浏览器语言判断。
-             *
-             * 日语 → 日本語
-             * 其他 → 中文
-             */
+    registerSuccess:
+      '端末の登録が完了しました。通知が有効になっています。',
 
-            const browserLanguage = navigator.language || "";
+    checkError:
+      '名前の確認中にエラーが発生しました。',
 
-            if (browserLanguage.toLowerCase().startsWith("ja")) {
-              currentLanguage = "ja";
-            } else {
-              currentLanguage = "zh";
-            }
-          }
-        } catch (error) {
-          currentLanguage = "zh";
-        }
+    registerError:
+      '端末の登録に失敗しました。',
 
-        applyLanguage();
+    serverError:
+      'サーバーとの通信に失敗しました。',
+
+    storageError:
+      '端末IDを保存できません。ブラウザのローカルストレージを確認してください。'
+
+  }
+
+};
+
+
+/*************************************************
+ * 页面启动
+ *************************************************/
+
+document.addEventListener(
+  'DOMContentLoaded',
+  function() {
+
+    initializeDevice();
+
+    initializeLanguage();
+
+  }
+);
+
+
+/*************************************************
+ * 初始化语言
+ *************************************************/
+
+function initializeLanguage() {
+
+  try {
+
+    const savedLanguage =
+      localStorage.getItem(
+        'badminton_v2_language'
+      );
+
+    if (
+      savedLanguage === 'zh' ||
+      savedLanguage === 'ja'
+    ) {
+
+      currentLanguage = savedLanguage;
+
+    } else {
+
+      /*
+       * 第一次打开：
+       * 根据浏览器语言判断。
+       *
+       * 日语 → 日本語
+       * 其他 → 中文
+       */
+
+      const browserLanguage =
+        navigator.language || '';
+
+      if (
+        browserLanguage
+          .toLowerCase()
+          .startsWith('ja')
+      ) {
+
+        currentLanguage = 'ja';
+
+      } else {
+
+        currentLanguage = 'zh';
+
       }
 
-      /*************************************************
-       * 切换语言
-       *************************************************/
+    }
 
-      function setLanguage(language) {
-        if (language !== "zh" && language !== "ja") {
+  } catch (error) {
+
+    currentLanguage = 'zh';
+
+  }
+
+  applyLanguage();
+
+}
+
+
+/*************************************************
+ * 切换语言
+ *************************************************/
+
+function setLanguage(language) {
+
+  if (
+    language !== 'zh' &&
+    language !== 'ja'
+  ) {
+    return;
+  }
+
+  currentLanguage = language;
+
+  try {
+
+    localStorage.setItem(
+      'badminton_v2_language',
+      language
+    );
+
+  } catch (error) {
+    // 无法保存语言也不影响页面运行
+  }
+
+  applyLanguage();
+
+}
+
+
+/*************************************************
+ * 应用语言
+ *************************************************/
+
+function applyLanguage() {
+
+  const texts =
+    translations[currentLanguage];
+
+
+  /*
+   * 普通文字
+   */
+
+  document
+    .querySelectorAll('[data-i18n]')
+    .forEach(function(element) {
+
+      const key =
+        element.getAttribute('data-i18n');
+
+      if (texts[key] !== undefined) {
+
+        element.innerHTML =
+          texts[key];
+
+      }
+
+    });
+
+
+  /*
+   * Placeholder
+   */
+
+  document
+    .querySelectorAll('[data-i18n-placeholder]')
+    .forEach(function(element) {
+
+      const key =
+        element.getAttribute(
+          'data-i18n-placeholder'
+        );
+
+      if (texts[key] !== undefined) {
+
+        element.placeholder =
+          texts[key];
+
+      }
+
+    });
+
+
+  /*
+   * 页面标题
+   */
+
+  document.title =
+    texts.pageTitle;
+
+
+  /*
+   * 当前语言按钮
+   */
+
+  document
+    .getElementById('languageZh')
+    .classList.toggle(
+      'active',
+      currentLanguage === 'zh'
+    );
+
+  document
+    .getElementById('languageJa')
+    .classList.toggle(
+      'active',
+      currentLanguage === 'ja'
+    );
+
+}
+
+
+/*************************************************
+ * 生成 / 取得 device_id
+ *************************************************/
+
+function initializeDevice() {
+
+  try {
+
+    deviceId =
+      localStorage.getItem(
+        'badminton_v2_device_id'
+      );
+
+    if (!deviceId) {
+
+      deviceId =
+        generateDeviceId();
+
+      localStorage.setItem(
+        'badminton_v2_device_id',
+        deviceId
+      );
+
+    }
+
+    console.log(
+      'device_id:',
+      deviceId
+    );
+
+  } catch (error) {
+
+    showMessage(
+      translations[currentLanguage]
+        .storageError,
+      'error'
+    );
+
+  }
+
+}
+
+
+/*************************************************
+ * 生成唯一 device_id
+ *************************************************/
+
+function generateDeviceId() {
+
+  const randomPart =
+    Math.random()
+      .toString(36)
+      .substring(2, 10);
+
+  const timePart =
+    Date.now().toString(36);
+
+  return (
+    'device_' +
+    timePart +
+    '_' +
+    randomPart
+  );
+
+}
+
+
+/*************************************************
+ * 检查姓名
+ *************************************************/
+
+function checkName() {
+
+  const input =
+    document.getElementById('userName');
+
+  const name =
+    input.value.trim();
+
+  if (!name) {
+
+    showMessage(
+      translations[currentLanguage]
+        .emptyName,
+      'error'
+    );
+
+    return;
+  }
+
+  currentUserName =
+    name;
+
+  setCheckButtonLoading(true);
+
+  google.script.run
+
+    .withSuccessHandler(
+      function(result) {
+
+        setCheckButtonLoading(false);
+
+        if (
+          !result ||
+          result.success === false
+        ) {
+
+          showMessage(
+            result && result.message
+              ? result.message
+              : translations[currentLanguage]
+                  .checkError,
+            'error'
+          );
+
           return;
         }
 
-        currentLanguage = language;
-
-        try {
-          localStorage.setItem("badminton_v2_language", language);
-        } catch (error) {
-          // 无法保存语言也不影响页面运行
-        }
-
-        applyLanguage();
-      }
-
-      /*************************************************
-       * 应用语言
-       *************************************************/
-
-      function applyLanguage() {
-        const texts = translations[currentLanguage];
 
         /*
-         * 普通文字
+         * 新用户
          */
 
-        document.querySelectorAll("[data-i18n]").forEach(function (element) {
-          const key = element.getAttribute("data-i18n");
+        if (!result.exists) {
 
-          if (texts[key] !== undefined) {
-            element.innerHTML = texts[key];
-          }
-        });
-
-        /*
-         * Placeholder
-         */
-
-        document
-          .querySelectorAll("[data-i18n-placeholder]")
-          .forEach(function (element) {
-            const key = element.getAttribute("data-i18n-placeholder");
-
-            if (texts[key] !== undefined) {
-              element.placeholder = texts[key];
-            }
-          });
-
-        /*
-         * 页面标题
-         */
-
-        document.title = texts.pageTitle;
-
-        /*
-         * 当前语言按钮
-         */
-
-        document
-          .getElementById("languageZh")
-          .classList.toggle("active", currentLanguage === "zh");
-
-        document
-          .getElementById("languageJa")
-          .classList.toggle("active", currentLanguage === "ja");
-      }
-
-      /*************************************************
-       * 生成 / 取得 device_id
-       *************************************************/
-
-      function initializeDevice() {
-        try {
-          deviceId = localStorage.getItem("badminton_v2_device_id");
-
-          if (!deviceId) {
-            deviceId = generateDeviceId();
-
-            localStorage.setItem("badminton_v2_device_id", deviceId);
-          }
-
-          console.log("device_id:", deviceId);
-        } catch (error) {
-          showMessage(translations[currentLanguage].storageError, "error");
-        }
-      }
-
-      /*************************************************
-       * 生成唯一 device_id
-       *************************************************/
-
-      function generateDeviceId() {
-        const randomPart = Math.random().toString(36).substring(2, 10);
-
-        const timePart = Date.now().toString(36);
-
-        return "device_" + timePart + "_" + randomPart;
-      }
-
-      /*************************************************
-       * 检查姓名
-       *************************************************/
-
-      function checkName() {
-        const input = document.getElementById("userName");
-
-        const name = input.value.trim();
-
-        if (!name) {
-          showMessage(translations[currentLanguage].emptyName, "error");
+          registerCurrentDevice();
 
           return;
         }
 
-        currentUserName = name;
 
-        setCheckButtonLoading(true);
+        /*
+         * 已有用户
+         */
 
-        google.script.run
+        document
+          .getElementById('nameStep')
+          .classList.add('hidden');
 
-          .withSuccessHandler(function (result) {
-            setCheckButtonLoading(false);
+        document
+          .getElementById('confirmStep')
+          .classList.remove('hidden');
 
-            if (!result || result.success === false) {
-              showMessage(
-                result && result.message
-                  ? result.message
-                  : translations[currentLanguage].checkError,
-                "error",
-              );
+        document
+          .getElementById('confirmName')
+          .textContent =
+            currentUserName;
 
-              return;
-            }
-
-            /*
-             * 新用户
-             */
-
-            if (!result.exists) {
-              registerCurrentDevice();
-
-              return;
-            }
-
-            /*
-             * 已有用户
-             */
-
-            document.getElementById("nameStep").classList.add("hidden");
-
-            document.getElementById("confirmStep").classList.remove("hidden");
-
-            document.getElementById("confirmName").textContent =
-              currentUserName;
-          })
-
-          .withFailureHandler(function (error) {
-            setCheckButtonLoading(false);
-
-            showMessage(
-              error && error.message
-                ? error.message
-                : translations[currentLanguage].serverError,
-              "error",
-            );
-          })
-
-          .apiCheckUserName(currentUserName);
       }
+    )
 
-      /*************************************************
-       * 新用户注册
-       *************************************************/
+    .withFailureHandler(
+      function(error) {
 
-      function registerCurrentDevice() {
-        const data = {
-          deviceId: deviceId,
+        setCheckButtonLoading(false);
 
-          userName: currentUserName,
+        showMessage(
+          error && error.message
+            ? error.message
+            : translations[currentLanguage]
+                .serverError,
+          'error'
+        );
 
-          /*
-           * 当前阶段仍然不接 FCM
-           */
-          fcmToken: "",
-
-          platform: getPlatform(),
-        };
-
-        google.script.run
-
-          .withSuccessHandler(function (result) {
-            if (!result || result.success === false) {
-              showMessage(
-                result && result.message
-                  ? result.message
-                  : translations[currentLanguage].registerError,
-                "error",
-              );
-
-              return;
-            }
-
-            showSuccess();
-          })
-
-          .withFailureHandler(function (error) {
-            showMessage(
-              error && error.message
-                ? error.message
-                : translations[currentLanguage].registerError,
-              "error",
-            );
-          })
-
-          .apiRegisterDevice(data);
       }
+    )
 
-      /*************************************************
-       * 已有用户确认
-       *************************************************/
+    .apiCheckUserName(
+      currentUserName
+    );
 
-      function confirmExistingUser() {
-        registerCurrentDevice();
-      }
+}
 
-      /*************************************************
-       * 返回姓名输入
-       *************************************************/
 
-      function backToNameStep() {
-        document.getElementById("confirmStep").classList.add("hidden");
+/*************************************************
+ * 新用户注册
+ *************************************************/
 
-        document.getElementById("nameStep").classList.remove("hidden");
+function registerCurrentDevice() {
 
-        document.getElementById("message").classList.add("hidden");
-      }
+  const data = {
 
-      /*************************************************
-       * 注册成功
-       *************************************************/
+    deviceId:
+      deviceId,
 
-      function showSuccess() {
-        const texts = translations[currentLanguage];
+    userName:
+      currentUserName,
 
-        document.getElementById("nameStep").classList.add("hidden");
+    /*
+     * 当前阶段仍然不接 FCM
+     */
+    fcmToken:
+      '',
 
-        document.getElementById("confirmStep").classList.add("hidden");
+    platform:
+      getPlatform()
 
-        document.getElementById("successStep").classList.remove("hidden");
+  };
 
-        document.getElementById("successMessage").textContent =
-          texts.registerSuccess;
 
-        document.getElementById("deviceIdDisplay").textContent = deviceId;
-      }
+  google.script.run
 
-      /*************************************************
-       * 平台判断
-       *************************************************/
+    .withSuccessHandler(
+      function(result) {
 
-      function getPlatform() {
-        const ua = navigator.userAgent || "";
+        if (
+          !result ||
+          result.success === false
+        ) {
 
-        if (/Android/i.test(ua)) {
-          return "android";
+          showMessage(
+            result && result.message
+              ? result.message
+              : translations[currentLanguage]
+                  .registerError,
+            'error'
+          );
+
+          return;
         }
 
-        if (/iPhone|iPad|iPod/i.test(ua)) {
-          return "ios";
-        }
+        showSuccess();
 
-        return "web";
       }
+    )
 
-      /*************************************************
-       * 显示消息
-       *************************************************/
+    .withFailureHandler(
+      function(error) {
 
-      function showMessage(message, type) {
-        const element = document.getElementById("message");
+        showMessage(
+          error && error.message
+            ? error.message
+            : translations[currentLanguage]
+                .registerError,
+          'error'
+        );
 
-        element.textContent = message;
-
-        element.className = "message " + (type || "");
       }
+    )
 
-      /*************************************************
-       * Continue 按钮状态
-       *************************************************/
+    .apiRegisterDevice(data);
 
-      function setCheckButtonLoading(isLoading) {
-        const button = document.getElementById("checkButton");
+}
 
-        const texts = translations[currentLanguage];
 
-        if (isLoading) {
-          button.disabled = true;
+/*************************************************
+ * 已有用户确认
+ *************************************************/
 
-          button.textContent = texts.checking;
-        } else {
-          button.disabled = false;
+function confirmExistingUser() {
 
-          button.textContent = texts.continueButton;
-        }
-      }
-    </script>
-  </body>
+  registerCurrentDevice();
+
+}
+
+
+/*************************************************
+ * 返回姓名输入
+ *************************************************/
+
+function backToNameStep() {
+
+  document
+    .getElementById('confirmStep')
+    .classList.add('hidden');
+
+  document
+    .getElementById('nameStep')
+    .classList.remove('hidden');
+
+  document
+    .getElementById('message')
+    .classList.add('hidden');
+
+}
+
+
+/*************************************************
+ * 注册成功
+ *************************************************/
+
+function showSuccess() {
+
+  const texts =
+    translations[currentLanguage];
+
+  document
+    .getElementById('nameStep')
+    .classList.add('hidden');
+
+  document
+    .getElementById('confirmStep')
+    .classList.add('hidden');
+
+  document
+    .getElementById('successStep')
+    .classList.remove('hidden');
+
+  document
+    .getElementById('successMessage')
+    .textContent =
+      texts.registerSuccess;
+
+  document
+    .getElementById('deviceIdDisplay')
+    .textContent =
+      deviceId;
+
+}
+
+
+/*************************************************
+ * 平台判断
+ *************************************************/
+
+function getPlatform() {
+
+  const ua =
+    navigator.userAgent || '';
+
+  if (/Android/i.test(ua)) {
+
+    return 'android';
+
+  }
+
+  if (/iPhone|iPad|iPod/i.test(ua)) {
+
+    return 'ios';
+
+  }
+
+  return 'web';
+
+}
+
+
+/*************************************************
+ * 显示消息
+ *************************************************/
+
+function showMessage(
+  message,
+  type
+) {
+
+  const element =
+    document.getElementById('message');
+
+  element.textContent =
+    message;
+
+  element.className =
+    'message ' +
+    (type || '');
+
+}
+
+
+/*************************************************
+ * Continue 按钮状态
+ *************************************************/
+
+function setCheckButtonLoading(
+  isLoading
+) {
+
+  const button =
+    document.getElementById('checkButton');
+
+  const texts =
+    translations[currentLanguage];
+
+  if (isLoading) {
+
+    button.disabled = true;
+
+    button.textContent =
+      texts.checking;
+
+  } else {
+
+    button.disabled = false;
+
+    button.textContent =
+      texts.continueButton;
+
+  }
+
+}
+
+</script>
+
+</body>
 </html>
