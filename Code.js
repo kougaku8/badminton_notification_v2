@@ -14,6 +14,16 @@
  * Web App 入口
  */
 function doGet(e) {
+  const action = e && e.parameter ? e.parameter.action : "";
+
+  if (action === "checkUserName") {
+    const userName = e.parameter.userName || "";
+
+    return ContentService.createTextOutput(
+      JSON.stringify(checkUserName(userName)),
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+
   return HtmlService.createTemplateFromFile("Notification")
     .evaluate()
     .setTitle("Badminton Notification V2")
