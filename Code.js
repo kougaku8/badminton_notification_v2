@@ -768,6 +768,8 @@ function apiSendNotificationEvent(
 
       'REGISTRATION_OK',
 
+      'REGISTRATION_CANCELLED',
+
       'WAITLIST_PROMOTE',
 
       'ACTIVITY_REMINDER'
