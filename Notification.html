@@ -7,345 +7,554 @@
   <meta charset="UTF-8">
 
   <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0">
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title id="pageTitle">通知设置</title>
 
+<style>
 
-  <style>
+  /* =========================================================
+     全局
+  ========================================================= */
 
-    * {
-      box-sizing: border-box;
-    }
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-    body {
+  html {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fa;
+}
 
-      margin: 0;
+  body {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
 
-      padding: 24px 16px;
+    margin: 0;
+    padding: 0;
 
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        "Noto Sans JP",
-        sans-serif;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans JP",
+      "Noto Sans",
+      sans-serif;
 
-      background: #f5f7fa;
+    background:
+      linear-gradient(
+        180deg,
+        #eef5ff 0%,
+        #f5f7fa 45%,
+        #f5f7fa 100%
+      );
 
-      color: #222;
+    color: #222;
 
-    }
+    font-size: 32px;
 
+    -webkit-font-smoothing: antialiased;
+  }
 
-    .container {
 
-      max-width: 480px;
+  /* =========================================================
+     全屏容器
+  ========================================================= */
 
-      margin: 0 auto;
+.container {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  min-height: 100dvh;
 
-    }
+  margin: 0;
+  padding:
+    max(6px, env(safe-area-inset-top))
+    0
+    max(6px, env(safe-area-inset-bottom))
+    0;
+}
 
+  /* =========================================================
+     主卡片
+  ========================================================= */
 
-    .card {
+.card {
+  width: 100%;
+  max-width: none;
 
-      background: #ffffff;
+  background: #ffffff;
+  border-radius: 0;
 
-      border-radius: 16px;
+  padding: 18px 0;
 
-      padding: 24px;
+  box-shadow: none;
+}
 
-      box-shadow:
-        0 4px 18px
-        rgba(0, 0, 0, 0.08);
+  /* =========================================================
+     语言切换
+  ========================================================= */
 
-    }
+  .language-switch {
 
+    display: flex;
 
-    .language-switch {
+    justify-content: center;
 
-      display: flex;
+    align-items: center;
 
-      justify-content: flex-end;
+    margin-bottom: 14px;
 
-      margin-bottom: 18px;
+  }
 
-    }
 
+  .language-button {
 
-    .language-button {
+    width: auto;
 
-      width: auto;
+    min-width: 110px;
 
-      margin: 0;
+    min-height: 58px;
 
-      padding: 7px 12px;
+    margin: 0;
 
-      border: 1px solid #ccc;
+    padding: 10px 18px;
 
-      border-radius: 8px;
+    border: 2px solid #ccc;
 
-      background: #fff;
+    border-radius: 12px;
 
-      color: #555;
+    background: #fff;
 
-      font-size: 13px;
+    color: #555;
 
-      cursor: pointer;
+    font-size: 24px;
 
-    }
+    font-weight: 600;
 
+    cursor: pointer;
 
-    .language-button.active {
+  }
 
-      background: #4285f4;
 
-      border-color: #4285f4;
+  .language-button.active {
 
-      color: #fff;
+    background: #4285f4;
 
-    }
+    border-color: #4285f4;
 
+    color: #fff;
 
-    .language-separator {
+  }
 
-      margin: 0 6px;
 
-      color: #aaa;
+  .language-separator {
 
-      line-height: 30px;
+    margin: 0 10px;
 
-    }
+    color: #aaa;
 
+    font-size: 24px;
 
-    h1 {
+    line-height: 58px;
 
-      margin-top: 0;
+  }
 
-      font-size: 24px;
 
-      text-align: center;
+  /* =========================================================
+     标题
+  ========================================================= */
 
-    }
+  h1 {
 
+    margin:
 
-    .description {
+      0
+      0
+      10px;
 
-      color: #666;
+    font-size: 40px;
 
-      line-height: 1.6;
+    line-height: 1.25;
 
-      font-size: 14px;
+    text-align: center;
 
-      text-align: center;
+    color: #1f2937;
 
-      margin-bottom: 24px;
+  }
 
-    }
 
+  /* =========================================================
+     描述
+  ========================================================= */
 
-    label {
+  .description {
 
-      display: block;
+    color: #666;
 
-      margin-bottom: 8px;
+    line-height: 1.7;
 
-      font-weight: 600;
+    font-size: 28px;
 
-    }
+    text-align: center;
 
+    margin-bottom: 34px;
 
-    input {
+  }
 
-      width: 100%;
 
-      padding: 13px 14px;
+  /* =========================================================
+     Label
+  ========================================================= */
 
-      border: 1px solid #ccc;
+  label {
 
-      border-radius: 10px;
+    display: block;
 
-      font-size: 16px;
+    margin-bottom: 12px;
 
-      outline: none;
+    font-size: 30px;
 
-    }
+    font-weight: 700;
 
+    color: #333;
 
-    input:focus {
+  }
 
-      border-color: #4285f4;
 
-    }
+  /* =========================================================
+     输入框
+  ========================================================= */
 
+  input {
 
-    button {
+    width: 100%;
 
-      width: 100%;
+    min-height: 70px;
 
-      margin-top: 16px;
+    padding: 16px 18px;
 
-      padding: 13px;
+    border:
+      2px solid #ccc;
 
-      border: 0;
+    border-radius: 14px;
 
-      border-radius: 10px;
+    font-size: 30px;
 
-      background: #4285f4;
+    background: #fff;
 
-      color: white;
+    color: #222;
 
-      font-size: 16px;
+    outline: none;
 
-      font-weight: 600;
+    -webkit-appearance: none;
 
-      cursor: pointer;
+  }
 
-    }
 
+  input:focus {
 
-    button:disabled {
+    border-color: #4285f4;
 
-      background: #aaa;
+    box-shadow:
+      0 0 0 4px
+      rgba(66, 133, 244, 0.12);
 
-      cursor: not-allowed;
+  }
 
-    }
 
+  /* =========================================================
+     所有按钮
+  ========================================================= */
 
-    .secondary {
+  button {
 
-      background: #777;
+    width: 100%;
 
-    }
+    min-height: 72px;
 
+    margin-top: 22px;
 
-    .hidden {
+    padding: 14px 18px;
 
-      display: none !important;
+    border: 0;
 
-    }
+    border-radius: 14px;
 
+    background: #4285f4;
 
-    .message {
+    color: white;
 
-      margin-top: 18px;
+    font-size: 30px;
 
-      padding: 12px;
+    font-weight: 700;
 
-      border-radius: 10px;
+    cursor: pointer;
 
-      background: #f1f3f4;
+    box-shadow:
+      0 4px 10px
+      rgba(66, 133, 244, 0.22);
 
-      font-size: 14px;
+    transition:
+      transform 0.1s ease,
+      opacity 0.1s ease;
 
-      line-height: 1.5;
+  }
 
-      white-space: pre-line;
 
-    }
+  button:active {
 
+    transform: scale(0.98);
 
-    .success {
+  }
 
-      background: #e6f4ea;
 
-      color: #137333;
+  button:disabled {
 
-    }
+    background: #aaa;
 
+    box-shadow: none;
 
-    .error {
+    cursor: not-allowed;
 
-      background: #fce8e6;
+    transform: none;
 
-      color: #c5221f;
+  }
 
-    }
 
+  /* =========================================================
+     次要按钮
+  ========================================================= */
 
-    .warning {
+  .secondary {
 
-      background: #fff8e1;
+    background: #757575;
 
-      color: #795548;
+    box-shadow:
+      0 4px 10px
+      rgba(0, 0, 0, 0.12);
 
-    }
+  }
 
 
-    .device-id {
+  /* =========================================================
+     隐藏
+  ========================================================= */
 
-      margin-top: 12px;
+  .hidden {
 
-      padding: 10px;
+    display: none !important;
 
-      background: #f1f3f4;
+  }
 
-      border-radius: 8px;
 
-      word-break: break-all;
+  /* =========================================================
+     消息
+  ========================================================= */
 
-      font-family: monospace;
+  .message {
 
-      font-size: 12px;
+    margin-top: 24px;
 
-      color: #555;
+    padding: 18px;
 
-    }
+    border-radius: 14px;
 
+    background: #f1f3f4;
 
-    .status-box {
+    font-size: 26px;
 
-      margin-top: 18px;
+    line-height: 1.6;
 
-      padding: 14px;
+    white-space: pre-line;
 
-      border-radius: 10px;
+  }
 
-      background: #f1f3f4;
 
-      text-align: center;
+  .success {
 
-      font-size: 15px;
+    background: #e6f4ea;
 
-    }
+    color: #137333;
 
+  }
 
-    .status-on {
 
-      background: #e6f4ea;
+  .error {
 
-      color: #137333;
+    background: #fce8e6;
 
-    }
+    color: #c5221f;
 
+  }
 
-    .status-off {
 
-      background: #fff8e1;
+  .warning {
 
-      color: #795548;
+    background: #fff8e1;
 
-    }
+    color: #795548;
 
+  }
 
-    .button-row {
 
-      display: flex;
+  /* =========================================================
+     Device ID
+  ========================================================= */
 
-      gap: 10px;
+  .device-id {
 
-    }
+    margin-top: 20px;
 
+    padding: 16px;
 
-    .button-row button {
+    background: #f1f3f4;
 
-      flex: 1;
+    border-radius: 12px;
 
-    }
+    word-break: break-all;
 
-  </style>
+    font-family: monospace;
+
+    font-size: 22px;
+
+    line-height: 1.5;
+
+    color: #555;
+
+  }
+
+
+  /* =========================================================
+     通知状态
+  ========================================================= */
+
+  .status-box {
+
+    margin-top: 24px;
+
+    padding: 22px 16px;
+
+    border-radius: 14px;
+
+    background: #f1f3f4;
+
+    text-align: center;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+  }
+
+
+  .status-on {
+
+    background: #e6f4ea;
+
+    color: #137333;
+
+  }
+
+
+  .status-off {
+
+    background: #fff8e1;
+
+    color: #795548;
+
+  }
+
+
+  /* =========================================================
+     双按钮
+  ========================================================= */
+
+  .button-row {
+
+    display: flex;
+
+    gap: 12px;
+
+  }
+
+
+  .button-row button {
+
+    flex: 1;
+
+  }
+
+
+  /* =========================================================
+     手机小屏幕
+  ========================================================= */
+
+  @media (max-width: 380px) {
+
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .card {
+    width: 100%;
+    padding: 18px 0;
+    border-radius: 8px;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .description {
+    font-size: 24px;
+  }
+
+  label {
+    font-size: 26px;
+  }
+
+  input {
+    font-size: 27px;
+  }
+
+  button {
+    font-size: 27px;
+  }
+
+}
+
+  /* =========================================================
+     平板 / 电脑
+  ========================================================= */
+
+@media (min-width: 700px) {
+
+  .container {
+    max-width: none;
+    width: 100%;
+    padding-top: 40px;
+  }
+
+  .card {
+    width: 100%;
+    padding: 40px;
+  }
+
+}
+
+</style>
+
+
 
 </head>
 
