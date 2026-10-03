@@ -21,17 +21,4 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage(function (payload) {
   console.log("[firebase-messaging-sw.js] Background message:", payload);
-
-  const notificationTitle =
-    payload.notification?.title || "Badminton Notification";
-
-  const notificationOptions = {
-    body: payload.notification?.body || "",
-
-    icon: "/icon-192.png",
-
-    data: payload.data || {},
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
 });
