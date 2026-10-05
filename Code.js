@@ -28,7 +28,6 @@
  *
  *************************************************/
 
-
 /*************************************************
  * Configuration
  *************************************************/
@@ -59,9 +58,7 @@
  *
  */
 
-const V1_API_KEY_PROPERTY =
-  'V1_API_KEY';
-
+const V1_API_KEY_PROPERTY = "V1_API_KEY";
 
 /*************************************************
  * doGet
@@ -86,19 +83,12 @@ const V1_API_KEY_PROPERTY =
  * 返回 Notification.html
  */
 function doGet(e) {
-
   try {
-
     e = e || {};
 
-    const parameter =
-      e.parameter || {};
+    const parameter = e.parameter || {};
 
-    const action =
-      String(
-        parameter.action || ''
-      ).trim();
-
+    const action = String(parameter.action || "").trim();
 
     /***********************************************
      * 没有 action
@@ -107,182 +97,89 @@ function doGet(e) {
      ***********************************************/
 
     if (!action) {
-
-      return HtmlService
-        .createTemplateFromFile(
-          'Notification'
-        )
+      return HtmlService.createTemplateFromFile("Notification")
         .evaluate()
-        .setTitle(
-          'Badminton Notification V2'
-        )
-        .setXFrameOptionsMode(
-          HtmlService.XFrameOptionsMode.ALLOWALL
-        );
-
+        .setTitle("Badminton Notification V2")
+        .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     }
-
 
     /***********************************************
      * checkUserName
      ***********************************************/
 
-    if (
-      action ===
-      'checkUserName'
-    ) {
+    if (action === "checkUserName") {
+      const userName = parameter.userName || "";
 
-      const userName =
-        parameter.userName || '';
-
-
-      return createJsonResponse_(
-        apiCheckUserName(
-          userName
-        )
-      );
-
+      return createJsonResponse_(apiCheckUserName(userName));
     }
-
 
     /***********************************************
      * registerDevice
      ***********************************************/
 
-    if (
-      action ===
-      'registerDevice'
-    ) {
-
+    if (action === "registerDevice") {
       const data = {
+        deviceId: parameter.deviceId || "",
 
-        deviceId:
-          parameter.deviceId || '',
+        userName: parameter.userName || "",
 
-        userName:
-          parameter.userName || '',
+        fcmToken: parameter.fcmToken || "",
 
-        fcmToken:
-          parameter.fcmToken || '',
+        platform: parameter.platform || "",
 
-        platform:
-          parameter.platform || '',
-
-        language:
-          parameter.language || 'ja'
-
+        language: parameter.language || "ja",
       };
 
-
-      return createJsonResponse_(
-        apiRegisterDevice(
-          data
-        )
-      );
-
+      return createJsonResponse_(apiRegisterDevice(data));
     }
-
 
     /***********************************************
      * getDeviceStatus
      ***********************************************/
 
-    if (
-      action ===
-      'getDeviceStatus'
-    ) {
+    if (action === "getDeviceStatus") {
+      const deviceId = parameter.deviceId || "";
 
-      const deviceId =
-        parameter.deviceId || '';
-
-
-      return createJsonResponse_(
-        apiGetDeviceStatus(
-          deviceId
-        )
-      );
-
+      return createJsonResponse_(apiGetDeviceStatus(deviceId));
     }
-
 
     /***********************************************
      * enableDevice
      ***********************************************/
 
-    if (
-      action ===
-      'enableDevice'
-    ) {
+    if (action === "enableDevice") {
+      const deviceId = parameter.deviceId || "";
 
-      const deviceId =
-        parameter.deviceId || '';
-
-
-      return createJsonResponse_(
-        apiEnableDevice(
-          deviceId
-        )
-      );
-
+      return createJsonResponse_(apiEnableDevice(deviceId));
     }
-
 
     /***********************************************
      * disableDevice
      ***********************************************/
 
-    if (
-      action ===
-      'disableDevice'
-    ) {
+    if (action === "disableDevice") {
+      const deviceId = parameter.deviceId || "";
 
-      const deviceId =
-        parameter.deviceId || '';
-
-
-      return createJsonResponse_(
-        apiDisableDevice(
-          deviceId
-        )
-      );
-
+      return createJsonResponse_(apiDisableDevice(deviceId));
     }
-
 
     /***********************************************
      * Unknown action
      ***********************************************/
 
     return createJsonResponse_({
+      success: false,
 
-      success:
-        false,
-
-      message:
-        'Unknown action: ' +
-        action
-
+      message: "Unknown action: " + action,
     });
-
   } catch (error) {
-
     return createJsonResponse_({
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error &&
-        error.message
-          ? error.message
-          : String(error)
-
+      message: error && error.message ? error.message : String(error),
     });
-
   }
-
 }
-
 
 /*************************************************
  * doPost
@@ -313,362 +210,188 @@ function doGet(e) {
  * sendNotificationEvent
  */
 function doPost(e) {
-
   try {
-
     if (!e) {
-
-      throw new Error(
-        'POST event がありません。'
-      );
-
+      throw new Error("POST event がありません。");
     }
 
-
-    const body =
-      e.postData &&
-      e.postData.contents
-        ? e.postData.contents
-        : '';
-
+    const body = e.postData && e.postData.contents ? e.postData.contents : "";
 
     if (!body) {
-
-      throw new Error(
-        'POST data がありません。'
-      );
-
+      throw new Error("POST data がありません。");
     }
-
 
     let request;
 
     try {
-
-      request =
-        JSON.parse(body);
-
+      request = JSON.parse(body);
     } catch (error) {
-
-      throw new Error(
-        'JSON の形式が正しくありません。'
-      );
-
+      throw new Error("JSON の形式が正しくありません。");
     }
 
+    const action = String(request.action || "").trim();
 
-    const action =
-      String(
-        request.action || ''
-      ).trim();
-
-
-    const data =
-      request.data || {};
-
+    const data = request.data || {};
 
     /***********************************************
      * checkUserName
      ***********************************************/
 
-    if (
-      action ===
-      'checkUserName'
-    ) {
-
-      return createJsonResponse_(
-        apiCheckUserName(
-          data.userName
-        )
-      );
-
+    if (action === "checkUserName") {
+      return createJsonResponse_(apiCheckUserName(data.userName));
     }
 
+    if (action === "apiCheckUserName") {
+      return createJsonResponse_(apiCheckUserName(request.userName));
+    }
 
     /***********************************************
      * registerDevice
      ***********************************************/
 
-    if (
-      action ===
-      'registerDevice'
-    ) {
-
-      return createJsonResponse_(
-        apiRegisterDevice(
-          data
-        )
-      );
-
+    if (action === "registerDevice") {
+      return createJsonResponse_(apiRegisterDevice(data));
     }
-
 
     /***********************************************
      * getDeviceStatus
      ***********************************************/
 
-    if (
-      action ===
-      'getDeviceStatus'
-    ) {
-
-      return createJsonResponse_(
-        apiGetDeviceStatus(
-          data.deviceId
-        )
-      );
-
+    if (action === "getDeviceStatus") {
+      return createJsonResponse_(apiGetDeviceStatus(data.deviceId));
     }
 
+    if (action === "apiGetDeviceStatus") {
+      return createJsonResponse_(apiGetDeviceStatus(request.deviceId));
+    }
 
     /***********************************************
      * enableDevice
      ***********************************************/
 
-    if (
-      action ===
-      'enableDevice'
-    ) {
-
-      return createJsonResponse_(
-        apiEnableDevice(
-          data.deviceId
-        )
-      );
-
+    if (action === "enableDevice") {
+      return createJsonResponse_(apiEnableDevice(data.deviceId));
     }
 
-
+    if (action === "apiEnableDevice") {
+      return createJsonResponse_(apiEnableDevice(request.deviceId));
+    }
     /***********************************************
      * disableDevice
      ***********************************************/
 
-    if (
-      action ===
-      'disableDevice'
-    ) {
-
-      return createJsonResponse_(
-        apiDisableDevice(
-          data.deviceId
-        )
-      );
-
+    if (action === "disableDevice") {
+      return createJsonResponse_(apiDisableDevice(data.deviceId));
     }
 
+    if (action === "apiDisableDevice") {
+      return createJsonResponse_(apiDisableDevice(request.deviceId));
+    }
 
     /***********************************************
      * V1 → V2 Notification Event
      ***********************************************/
 
-    if (
-      action ===
-      'sendNotificationEvent'
-    ) {
-
-      return createJsonResponse_(
-        apiSendNotificationEvent(
-          data
-        )
-      );
-
+    if (action === "sendNotificationEvent") {
+      return createJsonResponse_(apiSendNotificationEvent(data));
     }
-
 
     /***********************************************
      * Unknown action
      ***********************************************/
 
     return createJsonResponse_({
+      success: false,
 
-      success:
-        false,
-
-      message:
-        'Unknown action: ' +
-        action
-
+      message: "Unknown action: " + action,
     });
-
   } catch (error) {
-
     return createJsonResponse_({
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error &&
-        error.message
-          ? error.message
-          : String(error)
-
+      message: error && error.message ? error.message : String(error),
     });
-
   }
-
 }
-
 
 /*************************************************
  * API Wrapper
  *************************************************/
 
-
 /**
  * checkUserName API
  */
-function apiCheckUserName(
-  userName
-) {
-
+function apiCheckUserName(userName) {
   try {
-
-    return checkUserName(
-      userName
-    );
-
+    return checkUserName(userName);
   } catch (error) {
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error.message ||
-        String(error)
-
+      message: error.message || String(error),
     };
-
   }
-
 }
-
 
 /**
  * registerDevice API
  */
-function apiRegisterDevice(
-  data
-) {
-
+function apiRegisterDevice(data) {
   try {
-
-    return registerDevice(
-      data
-    );
-
+    return registerDevice(data);
   } catch (error) {
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error.message ||
-        String(error)
-
+      message: error.message || String(error),
     };
-
   }
-
 }
-
 
 /**
  * getDeviceStatus API
  */
-function apiGetDeviceStatus(
-  deviceId
-) {
-
+function apiGetDeviceStatus(deviceId) {
   try {
-
-    return getDeviceStatus(
-      deviceId
-    );
-
+    return getDeviceStatus(deviceId);
   } catch (error) {
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error.message ||
-        String(error)
-
+      message: error.message || String(error),
     };
-
   }
-
 }
-
 
 /**
  * enableDevice API
  */
-function apiEnableDevice(
-  deviceId
-) {
-
+function apiEnableDevice(deviceId) {
   try {
-
-    return enableDevice(
-      deviceId
-    );
-
+    return enableDevice(deviceId);
   } catch (error) {
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error.message ||
-        String(error)
-
+      message: error.message || String(error),
     };
-
   }
-
 }
-
 
 /**
  * disableDevice API
  */
-function apiDisableDevice(
-  deviceId
-) {
-
+function apiDisableDevice(deviceId) {
   try {
-
-    return disableDevice(
-      deviceId
-    );
-
+    return disableDevice(deviceId);
   } catch (error) {
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error.message ||
-        String(error)
-
+      message: error.message || String(error),
     };
-
   }
-
 }
-
 
 /*************************************************
  * V1 → V2 Notification API
@@ -716,80 +439,49 @@ function apiDisableDevice(
  * ACTIVITY_REMINDER
  *
  */
-function apiSendNotificationEvent(
-  data
-) {
-
+function apiSendNotificationEvent(data) {
   try {
-
-    data =
-      data || {};
-
+    data = data || {};
 
     /***********************************************
      * 1. API Key 验证
      ***********************************************/
 
-    verifyV1ApiKey_(
-      data.apiKey
-    );
-
+    verifyV1ApiKey_(data.apiKey);
 
     /***********************************************
      * 2. eventType
      ***********************************************/
 
-    const eventType =
-      String(
-        data.eventType || ''
-      ).trim();
-
+    const eventType = String(data.eventType || "").trim();
 
     if (!eventType) {
-
-      throw new Error(
-        'eventType がありません。'
-      );
-
+      throw new Error("eventType がありません。");
     }
-
 
     /***********************************************
      * 3. 目前允许的 Event
      ***********************************************/
 
     const allowedEvents = [
+      "ACTIVITY_NEW",
 
-      'ACTIVITY_NEW',
+      "ACTIVITY_UPDATE",
 
-      'ACTIVITY_UPDATE',
+      "ACTIVITY_CANCEL",
 
-      'ACTIVITY_CANCEL',
+      "REGISTRATION_OK",
 
-      'REGISTRATION_OK',
+      "REGISTRATION_CANCELLED",
 
-      'REGISTRATION_CANCELLED',
+      "WAITLIST_PROMOTE",
 
-      'WAITLIST_PROMOTE',
-
-      'ACTIVITY_REMINDER'
-
+      "ACTIVITY_REMINDER",
     ];
 
-
-    if (
-      allowedEvents.indexOf(
-        eventType
-      ) === -1
-    ) {
-
-      throw new Error(
-        '不明な eventType: ' +
-        eventType
-      );
-
+    if (allowedEvents.indexOf(eventType) === -1) {
+      throw new Error("不明な eventType: " + eventType);
     }
-
 
     /***********************************************
      * 4. 标题 / 内容
@@ -801,67 +493,29 @@ function apiSendNotificationEvent(
      * 自动选择 zh / ja。
      ***********************************************/
 
-    const titleZh =
-      String(
-        data.titleZh || ''
-      ).trim();
+    const titleZh = String(data.titleZh || "").trim();
 
+    const bodyZh = String(data.bodyZh || "").trim();
 
-    const bodyZh =
-      String(
-        data.bodyZh || ''
-      ).trim();
+    const titleJa = String(data.titleJa || "").trim();
 
+    const bodyJa = String(data.bodyJa || "").trim();
 
-    const titleJa =
-      String(
-        data.titleJa || ''
-      ).trim();
-
-
-    const bodyJa =
-      String(
-        data.bodyJa || ''
-      ).trim();
-
-
-    if (
-      !titleZh &&
-      !titleJa
-    ) {
-
-      throw new Error(
-        '通知标题不能为空。'
-      );
-
+    if (!titleZh && !titleJa) {
+      throw new Error("通知标题不能为空。");
     }
 
-
-    if (
-      !bodyZh &&
-      !bodyJa
-    ) {
-
-      throw new Error(
-        '通知内容不能为空。'
-      );
-
+    if (!bodyZh && !bodyJa) {
+      throw new Error("通知内容不能为空。");
     }
-
 
     /***********************************************
      * 5. 记录事件
      ***********************************************/
 
-    Logger.log(
-      '===== V1 → V2 Notification Event ====='
-    );
+    Logger.log("===== V1 → V2 Notification Event =====");
 
-    Logger.log(
-      'eventType = ' +
-      eventType
-    );
-
+    Logger.log("eventType = " + eventType);
 
     /***********************************************
      * 6. 调用现有 FCM
@@ -875,74 +529,42 @@ function apiSendNotificationEvent(
      * sendNotificationToAll()
      ***********************************************/
 
-    const result =
-      sendNotificationToAll({
+    const result = sendNotificationToAll({
+      titleZh: titleZh,
 
-        titleZh:
-          titleZh,
+      bodyZh: bodyZh,
 
-        bodyZh:
-          bodyZh,
+      titleJa: titleJa,
 
-        titleJa:
-          titleJa,
-
-        bodyJa:
-          bodyJa
-
-      });
-
+      bodyJa: bodyJa,
+    });
 
     /***********************************************
      * 7. 返回结果
      ***********************************************/
 
     return {
+      success: true,
 
-      success:
-        true,
+      eventType: eventType,
 
-      eventType:
-        eventType,
+      message: "通知事件处理成功。",
 
-      message:
-        '通知事件处理成功。',
-
-      results:
-        result
-
+      results: result,
     };
-
   } catch (error) {
-
     Logger.log(
-      'V1 → V2 Notification Error: ' +
-      (
-        error &&
-        error.message
-          ? error.message
-          : String(error)
-      )
+      "V1 → V2 Notification Error: " +
+        (error && error.message ? error.message : String(error)),
     );
 
-
     return {
+      success: false,
 
-      success:
-        false,
-
-      message:
-        error &&
-        error.message
-          ? error.message
-          : String(error)
-
+      message: error && error.message ? error.message : String(error),
     };
-
   }
-
 }
-
 
 /*************************************************
  * V1 API Key Verification
@@ -955,63 +577,29 @@ function apiSendNotificationEvent(
  *
  * V1_API_KEY
  */
-function verifyV1ApiKey_(
-  apiKey
-) {
-
-  const receivedKey =
-    String(
-      apiKey || ''
-    ).trim();
-
+function verifyV1ApiKey_(apiKey) {
+  const receivedKey = String(apiKey || "").trim();
 
   if (!receivedKey) {
-
-    throw new Error(
-      'V1 API Key がありません。'
-    );
-
+    throw new Error("V1 API Key がありません。");
   }
 
+  const properties = PropertiesService.getScriptProperties();
 
-  const properties =
-    PropertiesService
-      .getScriptProperties();
-
-
-  const savedKey =
-    String(
-      properties.getProperty(
-        V1_API_KEY_PROPERTY
-      ) || ''
-    ).trim();
-
+  const savedKey = String(
+    properties.getProperty(V1_API_KEY_PROPERTY) || "",
+  ).trim();
 
   if (!savedKey) {
-
-    throw new Error(
-      'V1_API_KEY が Script Properties に設定されていません。'
-    );
-
+    throw new Error("V1_API_KEY が Script Properties に設定されていません。");
   }
 
-
-  if (
-    receivedKey !==
-    savedKey
-  ) {
-
-    throw new Error(
-      'V1 API Key が正しくありません。'
-    );
-
+  if (receivedKey !== savedKey) {
+    throw new Error("V1 API Key が正しくありません。");
   }
-
 
   return true;
-
 }
-
 
 /*************************************************
  * JSON Response
@@ -1020,22 +608,11 @@ function verifyV1ApiKey_(
 /**
  * JSON Response
  */
-function createJsonResponse_(
-  data
-) {
-
-  return ContentService
-    .createTextOutput(
-      JSON.stringify(
-        data
-      )
-    )
-    .setMimeType(
-      ContentService.MimeType.JSON
-    );
-
+function createJsonResponse_(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
 }
-
 
 /*************************************************
  * Test Devices Sheet
@@ -1045,47 +622,24 @@ function createJsonResponse_(
  * 测试 Devices Sheet
  */
 function testDevicesSheet() {
+  const sheet = getDevicesSheet_();
 
-  const sheet =
-    getDevicesSheet_();
+  Logger.log("Sheet name = " + sheet.getName());
 
+  Logger.log("Last row = " + sheet.getLastRow());
 
-  Logger.log(
-    'Sheet name = ' +
-    sheet.getName()
-  );
-
-
-  Logger.log(
-    'Last row = ' +
-    sheet.getLastRow()
-  );
-
-
-  Logger.log(
-    'Last column = ' +
-    sheet.getLastColumn()
-  );
-
+  Logger.log("Last column = " + sheet.getLastColumn());
 
   return {
+    success: true,
 
-    success:
-      true,
+    sheetName: sheet.getName(),
 
-    sheetName:
-      sheet.getName(),
+    lastRow: sheet.getLastRow(),
 
-    lastRow:
-      sheet.getLastRow(),
-
-    lastColumn:
-      sheet.getLastColumn()
-
+    lastColumn: sheet.getLastColumn(),
   };
-
 }
-
 
 /*************************************************
  * Test V1 → V2 Notification API
@@ -1115,60 +669,29 @@ function testDevicesSheet() {
  * V1_API_KEY
  */
 function testSendNotificationEvent() {
+  const properties = PropertiesService.getScriptProperties();
 
-  const properties =
-    PropertiesService
-      .getScriptProperties();
-
-
-  const apiKey =
-    properties.getProperty(
-      V1_API_KEY_PROPERTY
-    );
-
+  const apiKey = properties.getProperty(V1_API_KEY_PROPERTY);
 
   if (!apiKey) {
-
-    throw new Error(
-      '请先设置 V1_API_KEY。'
-    );
-
+    throw new Error("请先设置 V1_API_KEY。");
   }
 
+  const result = apiSendNotificationEvent({
+    apiKey: apiKey,
 
-  const result =
-    apiSendNotificationEvent({
+    eventType: "ACTIVITY_NEW",
 
-      apiKey:
-        apiKey,
+    titleZh: "羽毛球活动通知",
 
-      eventType:
-        'ACTIVITY_NEW',
+    bodyZh: "这是 V2 → FCM 中文测试通知。",
 
-      titleZh:
-        '羽毛球活动通知',
+    titleJa: "バドミントン活動のお知らせ",
 
-      bodyZh:
-        '这是 V2 → FCM 中文测试通知。',
+    bodyJa: "これはV2 → FCM 日本語テスト通知です。",
+  });
 
-      titleJa:
-        'バドミントン活動のお知らせ',
-
-      bodyJa:
-        'これはV2 → FCM 日本語テスト通知です。'
-
-    });
-
-
-  Logger.log(
-    JSON.stringify(
-      result,
-      null,
-      2
-    )
-  );
-
+  Logger.log(JSON.stringify(result, null, 2));
 
   return result;
-
 }
